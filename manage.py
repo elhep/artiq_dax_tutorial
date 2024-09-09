@@ -11,18 +11,28 @@ ftdi_mapping = {
     'F': '1:5,4'
 }
 
+serial_mapping = {}
+
+for system, ftdi_path in ftdi_mapping.items():
+    _, path = ftdi_path.split(':')
+    path = path.replace(',', '.')
+    serial_mapping[system] = f"/dev/serial/by-path/pci-0000:00:14.0-usb-0:{path}:1.2-port0"
+
 
 # Create a subparser with command "flash"
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(dest='command')
 flash_parser = subparsers.add_parser('flash')
 restart_parser = subparsers.add_parser('restart')
+serial_parser = subparsers.add_parser('serial')
 
 # Add a required argument "-d" to the "flash" command
 flash_parser.add_argument('--directory', '-d', type=str, required=True, help="firmware directory")
 flash_parser.add_argument('--system', '-s', type=str, required=True, help="which system to flash (A or B or .. F or 'all' for all)")
 
 restart_parser.add_argument('--system', '-s', type=str, required=True, help="which system to restart (A or B or .. F or 'all' for all)")
+
+serial_parser.add_argument('--system', '-s', type=str, required=True, help="which system to get serial from (A or B or .. F)")
 
 # Parse the command line arguments
 args = parser.parse_args()
@@ -63,3 +73,9 @@ elif args.command == 'restart':
             '-I', f'ftdi_location {ftdi_path}', 
             'start'
         ])
+
+elif args.command == 'serial':
+    system = args.system
+    print(f"\n==> Serial port for system {system} under {serial_mapping[system]}\n")
+    print("\nTo exit press Ctrl + C\n")
+    subprocess.run(['flterm', serial_mapping[system]])
