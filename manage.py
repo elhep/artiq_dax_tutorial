@@ -46,7 +46,7 @@ if args.command == 'flash':
     if args.system == 'all':
         systems = ftdi_mapping.keys()
     else:
-        systems = [args.target]
+        systems = [args.system]
 
     for system in systems:
         print("\n==> Flashing system ", system, f" with ftdi location {ftdi_mapping[system]}\n")
@@ -63,7 +63,7 @@ elif args.command == 'restart':
     if args.system == 'all':
         systems = ftdi_mapping.keys()
     else:
-        systems = [args.target]
+        systems = [args.system]
 
     for system in systems:
         print("\n==> Restarting system ", system, f" with ftdi location {ftdi_mapping[system]}\n")
