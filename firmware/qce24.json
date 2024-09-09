@@ -1,0 +1,27 @@
+{
+    "target": "kasli",
+    "variant": "qce24",
+    "hw_rev": "v2.0",
+    "base": "master",
+    "peripherals": [
+        {
+            "type": "dio",
+            "ports": [0],
+            "bank_direction_low": "output",
+            "bank_direction_high": "input",
+            "edge_counter": true
+        },
+        {
+            "type": "urukul",
+            "hw_rev": "v1.5",
+            "ports": [1, 2],
+            "clk_sel": 2,
+            "dds": "ad9910"
+        },
+        {
+            "type": "phaser",
+            "ports": [3]
+        }
+    ]
+}
+
