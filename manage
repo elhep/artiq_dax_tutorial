@@ -7,21 +7,21 @@ import tempfile
 
 
 ftdi_mapping = {
-    'A': '1:5,1,1',
-    'B': '1:5,1,2',
-    'C': '1:5,1,3',
-    'D': '1:5,2',
-    'E': '1:5,3',
-    'F': '1:5,4'
+    'A': '1:5,4',
+    'B': '1:5,3',
+    'C': '1:5,2',
+    'D': '1:5,1,1',
+    'E': '1:5,1,3',
+    'F': '1:5,1,2',
 }
 
 ip_mapping = {
-    'A': '192.168.96.80',
-    'B': '192.168.96.81',
-    'C': '192.168.96.82',
-    'D': '192.168.96.83',
-    'E': '192.168.96.84',
-    'F': '192.168.96.85',
+    'A': '192.168.95.213',
+    'B': '192.168.95.214',
+    'C': '192.168.95.215',
+    'D': '192.168.95.216',
+    'E': '192.168.95.217',
+    'F': '192.168.95.218',
 }
 
 serial_mapping = {}
@@ -40,16 +40,13 @@ flash_parser = subparsers.add_parser('flash')
 default_firmware_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'firmware', 'qce24')
 flash_parser.add_argument('--directory', '-d', type=str, default=default_firmware_directory, help="firmware directory")
 flash_parser.add_argument('--system', '-s', type=str, required=True, help="which system to flash (A or B or .. F or 'all' for all)")
+flash_parser.add_argument('--ip', '-i', type=str, help="ip address to set (only for single system)")
 
 restart_parser = subparsers.add_parser('restart')
 restart_parser.add_argument('--system', '-s', type=str, required=True, help="which system to restart (A or B or .. F or 'all' for all)")
 
 serial_parser = subparsers.add_parser('serial')
 serial_parser.add_argument('--system', '-s', type=str, required=True, help="which system to get serial from (A or B or .. F)")
-
-set_network_parser = subparsers.add_parser('set_ip')
-set_network_parser.add_argument('--system', '-s', type=str, required=True, help="which system to set ip for (A or B or .. F or 'all' for all)")
-set_network_parser.add_argument('--ip', '-i', type=str, help="ip address to set (only for single system)")
 
 # Parse the command line arguments
 args = parser.parse_args()
@@ -62,18 +59,31 @@ if args.command == 'flash':
     systems = []
     if args.system == 'all':
         systems = ftdi_mapping.keys()
+        ips = [ip_mapping[system] for system in systems]
     else:
         systems = [args.system]
+        if args.ip is None:
+            ips = [ip_mapping[args.system]]
+        else:
+            ips = [args.ip]
 
-    for system in systems:
+    for system, ip in zip(systems, ips):
         print("\n==> Flashing system ", system, f" with ftdi location {ftdi_mapping[system]}\n")
         ftdi_path = ftdi_mapping[system]
-        subprocess.run([
-            'artiq_flash', '-t', 'kasli', 
-            '-I', f'ftdi_location {ftdi_path}', 
-            '-d', args.directory, '--srcbuild', 
-            'erase', 'gateware', 'bootloader', 'firmware', 'start'
-        ])
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            storage_path = os.path.join(tmpdirname, 'storge.img')
+            subprocess.run([
+                'artiq_mkfs',
+                '-s', 'ip', ip,
+                storage_path
+            ])
+            subprocess.run([
+                'artiq_flash', '-t', 'kasli', 
+                '-I', f'ftdi_location {ftdi_path}', 
+                '-d', args.directory,
+                '-f', storage_path, 
+                'erase', 'gateware', 'bootloader', 'firmware', 'storage', 'start'
+            ])
 
 elif args.command == 'restart':
     systems = []
@@ -96,31 +106,6 @@ elif args.command == 'serial':
     print(f"\n==> Serial port for system {system} under {serial_mapping[system]}\n")
     print("\nTo exit press Ctrl + C\n")
     subprocess.run(['flterm', serial_mapping[system]])
-
-elif args.command == 'set_ip':
-    systems = []
-    if args.system == 'all':
-        systems = ftdi_mapping.keys()
-        ips = [ip_mapping[system] for system in systems]
-    else:
-        systems = [args.system]
-        ips = [args.ip]
-
-    for system, ip in zip(systems, ips):
-        print(f"\n==> Setting IP for system {system} to {ip}\n")
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            storage_path = os.path.join(tmpdirname, 'storge.img')
-            subprocess.run([
-                'artiq_mkfs',
-                '-s', 'ip', ip,
-                storage_path
-            ])
-            subprocess.run([
-                'artiq_flash', '-t', 'kasli', 
-                '-I', f'ftdi_location {ftdi_path}', 
-                '-f', storage_path, 
-                'storage', 'start'
-            ])
 
 else:
     print("Invalid command")
