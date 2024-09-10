@@ -2,6 +2,8 @@
 
 import subprocess
 import argparse
+import os
+import tempfile
 
 
 ftdi_mapping = {
@@ -11,6 +13,15 @@ ftdi_mapping = {
     'D': '1:5,2',
     'E': '1:5,3',
     'F': '1:5,4'
+}
+
+ip_mapping = {
+    'A': '192.168.96.80',
+    'B': '192.168.96.81',
+    'C': '192.168.96.82',
+    'D': '192.168.96.83',
+    'E': '192.168.96.84',
+    'E': '192.168.96.85',
 }
 
 serial_mapping = {}
@@ -24,17 +35,21 @@ for system, ftdi_path in ftdi_mapping.items():
 # Create a subparser with command "flash"
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(dest='command')
-flash_parser = subparsers.add_parser('flash')
-restart_parser = subparsers.add_parser('restart')
-serial_parser = subparsers.add_parser('serial')
 
-# Add a required argument "-d" to the "flash" command
-flash_parser.add_argument('--directory', '-d', type=str, required=True, help="firmware directory")
+flash_parser = subparsers.add_parser('flash')
+default_firmware_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'firmware', 'qce24')
+flash_parser.add_argument('--directory', '-d', type=str, default=default_firmware_directory, help="firmware directory")
 flash_parser.add_argument('--system', '-s', type=str, required=True, help="which system to flash (A or B or .. F or 'all' for all)")
 
+restart_parser = subparsers.add_parser('restart')
 restart_parser.add_argument('--system', '-s', type=str, required=True, help="which system to restart (A or B or .. F or 'all' for all)")
 
+serial_parser = subparsers.add_parser('serial')
 serial_parser.add_argument('--system', '-s', type=str, required=True, help="which system to get serial from (A or B or .. F)")
+
+set_network_parser = subparsers.add_parser('set_ip')
+set_network_parser.add_argument('--system', '-s', type=str, required=True, help="which system to set ip for (A or B or .. F or 'all' for all)")
+set_network_parser.add_argument('--ip', '-i', type=str, required=True, help="ip address to set (only for single system)")
 
 # Parse the command line arguments
 args = parser.parse_args()
@@ -81,3 +96,32 @@ elif args.command == 'serial':
     print(f"\n==> Serial port for system {system} under {serial_mapping[system]}\n")
     print("\nTo exit press Ctrl + C\n")
     subprocess.run(['flterm', serial_mapping[system]])
+
+elif args.command == 'set_ip':
+    systems = []
+    if args.system == 'all':
+        systems = ftdi_mapping.keys()
+        ips = [ip_mapping[system] for system in systems]
+    else:
+        systems = [args.system]
+        ips = [args.ip]
+
+    for system, ip in zip(systems, ips):
+        print(f"\n==> Setting IP for system {system} to {ip}\n")
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            storage_path = os.path.join(tmpdirname, 'storge.img')
+            subprocess.run([
+                'artiq_mkfs',
+                '-s', 'ip', ip,
+                storage_path
+            ])
+            subprocess.run([
+                'artiq_flash', '-t', 'kasli', 
+                '-I', f'ftdi_location {ftdi_path}', 
+                '-f', storage_path, 
+                'storage', 'start'
+            ])
+
+else:
+    print("Invalid command")
+    exit(1)
