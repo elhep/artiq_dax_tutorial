@@ -20,12 +20,12 @@ ARTIQ NDSP. Oscilloscopes are not identical, but have similar functionalites
 (Tektronix 4000 Series). Every system is connected to the oscilloscope in 
 the same way:
 
-Oscilloscope ch. |       Module ch.
-:---------------:|:---------------------:
-        1        | DIO SMA ch. 0 (output)
-        2        |  Urukul AD9910 ch. 0
-        3        |  Urukul AD9910 ch. 1
-        4        |   Phaser BB RF out 0
+Oscilloscope ch. |     Module ch.
+:---------------:|:-------------------------:
+ 1               |    DIO SMA ch. 0 (output)
+ 2               | Urukul AD9910 ch. 0
+ 3               | Urukul AD9910 ch. 1
+ 4               | Phaser BB RF out 0
 
 ## Network
 
@@ -55,11 +55,11 @@ System |     Osc. model      |   Osc. address
 
 ## Current status
 
-System |                     Status                     | Tested
-:-----:|:----------------------------------------------:|:-:
-   A   |         Flashed, signals not connected | OK
-   B   |               Flashed, connected | OK
-   C   |               Flashed, connected | OK
-   D   |         Flashed, signals not connected | No
-   E   |         Flashed, signals not connected | No
-   F   | Flashed, signals not connected, no oscilloscope | No
+System |                     Status                      | Tested
+:-----:|:-----------------------------------------------:|:-----:
+   A   |         Flashed, signals not connected          |   OK
+   B   |               Flashed, connected                |   OK
+   C   |               Flashed, connected                |   OK
+   D   |         Flashed, signals not connected          |   No
+   E   |         Flashed, signals not connected          |   No
+   F   | Flashed, signals not connected, no oscilloscope |   No
