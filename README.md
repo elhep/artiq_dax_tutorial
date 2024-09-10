@@ -55,11 +55,11 @@ System |     Osc. model      |   Osc. address
 
 ## Current status
 
-System |                     Status
-:-----:|:----------------------------------------------:
-   A   |         Flashed, signals not connected
-   B   |               Flashed, connected
-   C   |               Flashed, connected
-   D   |         Flashed, signals not connected
-   E   |         Flashed, signals not connected
-   F   | Flashed, signals not connected, no oscilloscope
+System |                     Status                     | Tested
+:-----:|:----------------------------------------------:|:-:
+   A   |         Flashed, signals not connected | OK
+   B   |               Flashed, connected | OK
+   C   |               Flashed, connected | OK
+   D   |         Flashed, signals not connected | No
+   E   |         Flashed, signals not connected | No
+   F   | Flashed, signals not connected, no oscilloscope | No
