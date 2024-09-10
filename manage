@@ -40,7 +40,6 @@ flash_parser = subparsers.add_parser('flash')
 default_firmware_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'firmware', 'qce24')
 flash_parser.add_argument('--directory', '-d', type=str, default=default_firmware_directory, help="firmware directory")
 flash_parser.add_argument('--system', '-s', type=str, required=True, help="which system to flash (A or B or .. F or 'all' for all)")
-flash_parser.add_argument('--ip', '-i', type=str, help="ip address to set (only for single system)")
 
 restart_parser = subparsers.add_parser('restart')
 restart_parser.add_argument('--system', '-s', type=str, required=True, help="which system to restart (A or B or .. F or 'all' for all)")
@@ -48,24 +47,19 @@ restart_parser.add_argument('--system', '-s', type=str, required=True, help="whi
 serial_parser = subparsers.add_parser('serial')
 serial_parser.add_argument('--system', '-s', type=str, required=True, help="which system to get serial from (A or B or .. F)")
 
-# Parse the command line arguments
+device_db_parser = subparsers.add_parser('ddb')
+device_db_parser.add_argument('--system', '-s', type=str, required=True, help="which system to restart (A or B or .. F or 'all' for all)")
+
 args = parser.parse_args()
 
-# Check if the "flash" command was given
-if args.command == 'flash':
-    # Access the value of the "-d" argument
-    device = args.directory
-    
+if args.command == 'flash':    
     systems = []
     if args.system == 'all':
         systems = ftdi_mapping.keys()
         ips = [ip_mapping[system] for system in systems]
     else:
         systems = [args.system]
-        if args.ip is None:
-            ips = [ip_mapping[args.system]]
-        else:
-            ips = [args.ip]
+        ips = [ip_mapping[args.system]]
 
     for system, ip in zip(systems, ips):
         print("\n==> Flashing system ", system, f" with ftdi location {ftdi_mapping[system]}\n")
@@ -106,6 +100,25 @@ elif args.command == 'serial':
     print(f"\n==> Serial port for system {system} under {serial_mapping[system]}\n")
     print("\nTo exit press Ctrl + C\n")
     subprocess.run(['flterm', serial_mapping[system]])
+
+elif args.command == "ddb":
+    systems = []
+    if args.system == 'all':
+        systems = ftdi_mapping.keys()
+        ips = [ip_mapping[system] for system in systems]
+    else:
+        systems = [args.system]
+        ips = [ip_mapping[args.system]]
+
+    expeirments_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'experiments')
+    ddb_template_path = os.path.join(expeirments_path, 'ddb_tmp.py')
+    
+    with open(ddb_template_path, 'r') as f:
+        ddb_template = f.read()
+    for system, ip in zip(systems, ips):
+        with open(os.path.join(expeirments_path, f"device_db_{system.lower()}.py"), 'w') as f:
+            f.write(ddb_template.replace("%%core_ip%%", ip).replace("%%system%%", system))
+
 
 else:
     print("Invalid command")
