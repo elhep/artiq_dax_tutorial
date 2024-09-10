@@ -49,7 +49,7 @@ serial_parser.add_argument('--system', '-s', type=str, required=True, help="whic
 
 set_network_parser = subparsers.add_parser('set_ip')
 set_network_parser.add_argument('--system', '-s', type=str, required=True, help="which system to set ip for (A or B or .. F or 'all' for all)")
-set_network_parser.add_argument('--ip', '-i', type=str, required=True, help="ip address to set (only for single system)")
+set_network_parser.add_argument('--ip', '-i', type=str, help="ip address to set (only for single system)")
 
 # Parse the command line arguments
 args = parser.parse_args()
