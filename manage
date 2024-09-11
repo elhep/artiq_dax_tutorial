@@ -4,29 +4,15 @@ import subprocess
 import argparse
 import os
 import tempfile
+from setups import ftdi_mapping, ip_mapping
 
-
-ftdi_mapping = {
-    'A': '1:5,4',
-    'B': '1:5,3',
-    'C': '1:5,2',
-    'D': '1:5,1,1',
-    'E': '1:5,1,3',
-    'F': '1:5,1,2',
-}
-
-ip_mapping = {
-    'A': '192.168.95.213',
-    'B': '192.168.95.214',
-    'C': '192.168.95.215',
-    'D': '192.168.95.216',
-    'E': '192.168.95.217',
-    'F': '192.168.95.218',
-}
 
 serial_mapping = {}
 
 for system, ftdi_path in ftdi_mapping.items():
+    if ftdi_path is None:
+        serial_mapping[system] = "/dev/serial/by-id/usb-FTDI_Quad_RS232-HS-if02-port0"
+        continue
     _, path = ftdi_path.split(':')
     path = path.replace(',', '.')
     serial_mapping[system] = f"/dev/serial/by-path/pci-0000:00:14.0-usb-0:{path}:1.2-port0"
@@ -39,31 +25,31 @@ subparsers = parser.add_subparsers(dest='command')
 flash_parser = subparsers.add_parser('flash')
 default_firmware_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'firmware', 'qce24')
 flash_parser.add_argument('--directory', '-d', type=str, default=default_firmware_directory, help="firmware directory")
-flash_parser.add_argument('--system', '-s', type=str, required=True, help="which system to flash (A or B or .. F or 'all' for all)")
+flash_parser.add_argument('--system', '-s', type=str, required=True, help="which system to flash (A or B or .. F or X or 'all' for all)")
 
 restart_parser = subparsers.add_parser('restart')
-restart_parser.add_argument('--system', '-s', type=str, required=True, help="which system to restart (A or B or .. F or 'all' for all)")
+restart_parser.add_argument('--system', '-s', type=str, required=True, help="which system to restart (A or B or .. F or X or 'all' for all)")
 
 serial_parser = subparsers.add_parser('serial')
-serial_parser.add_argument('--system', '-s', type=str, required=True, help="which system to get serial from (A or B or .. F)")
+serial_parser.add_argument('--system', '-s', type=str, required=True, help="which system to get serial from (A or B or .. F or X)")
 
 device_db_parser = subparsers.add_parser('ddb')
-device_db_parser.add_argument('--system', '-s', type=str, required=True, help="which system to restart (A or B or .. F or 'all' for all)")
+device_db_parser.add_argument('--system', '-s', type=str, required=True, help="which system to restart (A or B or .. F or X or 'all' for all)")
 
 args = parser.parse_args()
 
 if args.command == 'flash':    
     systems = []
     if args.system == 'all':
-        systems = ftdi_mapping.keys()
+        systems = ftdi_mapping.keys().remove('X')
         ips = [ip_mapping[system] for system in systems]
     else:
         systems = [args.system]
         ips = [ip_mapping[args.system]]
 
     for system, ip in zip(systems, ips):
-        print("\n==> Flashing system ", system, f" with ftdi location {ftdi_mapping[system]}\n")
         ftdi_path = ftdi_mapping[system]
+        print("\n==> Flashing system ", system, f" with ftdi location {ftdi_path}\n")
         with tempfile.TemporaryDirectory() as tmpdirname:
             storage_path = os.path.join(tmpdirname, 'storge.img')
             subprocess.run([
@@ -71,29 +57,34 @@ if args.command == 'flash':
                 '-s', 'ip', ip,
                 storage_path
             ])
-            subprocess.run([
+            cmd = [
                 'artiq_flash', '-t', 'kasli', 
-                '-I', f'ftdi_location {ftdi_path}', 
                 '-d', args.directory,
                 '-f', storage_path, 
                 'erase', 'gateware', 'bootloader', 'firmware', 'storage', 'start'
-            ])
+            ]
+            if ftdi_path is not None:
+                cmd = [cmd[0], '-I', f'ftdi_location {ftdi_path}'] + cmd[1:]
+            print(cmd)
+            subprocess.run(cmd)
 
 elif args.command == 'restart':
     systems = []
     if args.system == 'all':
-        systems = ftdi_mapping.keys()
+        systems = ftdi_mapping.keys().remove('X')
     else:
         systems = [args.system]
 
     for system in systems:
         print("\n==> Restarting system ", system, f" with ftdi location {ftdi_mapping[system]}\n")
         ftdi_path = ftdi_mapping[system]
-        subprocess.run([
-            'artiq_flash', '-t', 'kasli', 
-            '-I', f'ftdi_location {ftdi_path}', 
+        cmd = [
+            'artiq_flash', '-t', 'kasli',
             'start'
-        ])
+        ]
+        if ftdi_path is not None:
+            cmd = [cmd[0], '-I', f'ftdi_location {ftdi_path}'] + cmd[1:]
+        subprocess.run(cmd)
 
 elif args.command == 'serial':
     system = args.system
