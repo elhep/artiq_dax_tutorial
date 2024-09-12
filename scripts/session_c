@@ -1,6 +1,8 @@
 #!/bin/bash
 
-artiq_master --device-db device_db_c.py --bind * --port-notify 3252 --port-control 3263 --port-logging 1062 --port-broadcast 1162 --name "System C" &
+cd experiments
+
+artiq_master --device-db device_db_c.py --bind '*' --port-notify 3252 --port-control 3263 --port-logging 1062 --port-broadcast 1162 --name "System C" &
 
 sleep 5
 

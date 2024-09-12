@@ -5,6 +5,7 @@ import argparse
 import os
 import sys
 import tempfile
+import stat
 from setups import *
 from templates import device_db_template, scope_template
 
@@ -143,16 +144,17 @@ elif args.command == "update-scripts":
     else:
         systems = [args.system]
 
+    expeirments_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                                'experiments')
+
     for system in systems:
-        ddb_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
-                                'experiments', f'device_db_{system.lower()}.py')
         master_cmd = [
             # sys.executable,
             # "-u", "-m", 
             # "artiq.frontend.artiq_master",
             "artiq_master",
             "--device-db", f"device_db_{system.lower()}.py",
-            "--bind", "*",
+            "--bind", "'*'",
             "--port-notify", str(master_notify_ports[system]),
             "--port-control", str(master_control_ports[system]),
             "--port-logging", str(master_logging_ports[system]),
@@ -175,9 +177,13 @@ elif args.command == "update-scripts":
 
         with open(script_path, 'w') as f:
             f.write(f"#!/bin/bash\n\n")
+            f.write("cd experiments\n\n")
             f.write(" ".join(master_cmd) + " &\n\n")
             f.write("sleep 5\n\n")
             f.write(" ".join(ctlmgr_cmd) + "\n")
+
+        st = os.stat(script_path)
+        os.chmod(script_path, st.st_mode | stat.S_IEXEC)
 
 elif args.command == "session":
     assert args.system in ['A', 'B', 'C', 'D', 'E', 'F'], "Invalid system, only A-F are allowed, one at a time"
