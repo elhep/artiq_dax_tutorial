@@ -67,3 +67,42 @@ moninj_proxy_ports = {
     'F': 1588,
     'X': 1383   # default
 }
+
+master_notify_ports = {
+    'A': 3250,
+    'B': 3251,
+    'C': 3252,
+    'D': 3253,
+    'E': 3254,
+    'F': 3255,
+    'X': 3250   # default
+}
+
+master_control_ports = {
+    'A': 3261,
+    'B': 3262,
+    'C': 3263,
+    'D': 3264,
+    'E': 3265,
+    'F': 3266,
+}
+
+master_logging_ports = {
+    'A': 1060,
+    'B': 1061,
+    'C': 1062,
+    'D': 1063,
+    'E': 1064,
+    'F': 1065,
+    'X': 1066   # default
+}
+
+master_broadcast_ports = {
+    'A': 1160,
+    'B': 1161,
+    'C': 1162,
+    'D': 1163,
+    'E': 1164,
+    'F': 1165,
+    'X': 1067   # default
+}

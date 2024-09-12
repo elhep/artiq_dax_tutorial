@@ -131,19 +131,27 @@ elif args.command == "ddb":
 elif args.command == "session":
     assert args.system in ['A', 'B', 'C', 'D', 'E', 'F'], "Invalid system, only A-F are allowed, one at a time"
 
-    master_cmd    = [
+    master_cmd = [
         sys.executable, 
         "-u", "-m", 
         "artiq.frontend.artiq_master",
         "--device-db", f"device_db_{args.system.lower()}.py",
-        "--bind", "'*'"
+        "--bind", "'*'",
+        "--port-notify", str(master_notify_ports[args.system]),
+        "--port-control", str(master_control_ports[args.system]),
+        "--port-logging", str(master_logging_ports[args.system]),
+        "--port-broadcast", str(master_broadcast_ports[args.system]),
+        "--name", f"\"System {args.system}\"",
     ]
-    ctlmgr_cmd    = [
+    ctlmgr_cmd = [
         sys.executable,
         "-m", 
         "artiq_comtools.artiq_ctlmgr",
         "--server", args.master_ip
     ]
+
+    print("Master command: ", " ".join(master_cmd))
+    print("Controller manager command: ", " ".join(ctlmgr_cmd))
 
     with subprocess.Popen(master_cmd,
                           cwd=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'experiments'),
