@@ -5,7 +5,7 @@ import argparse
 import os
 import sys
 import tempfile
-from setups import ftdi_mapping, ip_mapping, scope_ip_mapping, scope_controller_ports
+from setups import *
 from templates import device_db_template, scope_template
 
 
@@ -37,11 +37,11 @@ serial_parser.add_argument('--system', '-s', type=str, required=True, help="whic
 
 device_db_parser = subparsers.add_parser('ddb')
 device_db_parser.add_argument('--system', '-s', type=str, required=True, help="which system to restart (A or B or .. F or X or 'all' for all)")
-device_db_parser.add_argument('--scope-ctl-host', type=str, default="::1", required=False, help="Oscilloscope controller host")
-device_db_parser.add_argument('--scope-ctl-port', type=str, required=False, help="Oscilloscope controller port")
+device_db_parser.add_argument('--ctl-host', type=str, default="::1", required=False, help="Oscilloscope controller host")
 
 session_parser = subparsers.add_parser('session')
 session_parser.add_argument('--system', '-s', type=str, required=True, help="which system to get serial from (A or B or .. F)")
+session_parser.add_argument('--master-ip', type=str, default="::1", required=False, help="Master IP address")
 
 args = parser.parse_args()
 
@@ -109,18 +109,22 @@ elif args.command == "ddb":
     expeirments_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'experiments')
        
     for system in systems:
-        core_ip = ip_mapping[system]
         scope_ip = scope_ip_mapping[system]
         scope_ctl_port = scope_controller_ports[system]
-        scope_ctl_host = args.scope_ctl_host
+        scope_ctl_host = args.ctl_host
 
         with open(os.path.join(expeirments_path, f"device_db_{system.lower()}.py"), 'w') as f:
             f.write(device_db_template.format(
-                core_ip=core_ip,
-                system=system))
+                core_ip=ip_mapping[system],
+                system=system,
+                ctl_host=args.ctl_host,
+                corelog_ctl_port=corelog_controller_ports[system],
+                moninj_proxy_port=moninj_proxy_ports[system],
+                moninj_ctl_port=moninj_controller_ports[system]
+            ))
             if scope_ip is not None and scope_ctl_port is not None:
                 f.write(scope_template.format(
-                    scope_ctl_host=scope_ctl_host,
+                    ctl_host=scope_ctl_host,
                     scope_ctl_port=scope_ctl_port,
                     scope_ip=scope_ip))
 
@@ -136,7 +140,8 @@ elif args.command == "session":
     ctlmgr_cmd    = [
         sys.executable,
         "-m", 
-        "artiq_comtools.artiq_ctlmgr"
+        "artiq_comtools.artiq_ctlmgr",
+        "--server", args.master_ip
     ]
 
     with subprocess.Popen(master_cmd,

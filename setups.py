@@ -38,3 +38,32 @@ scope_controller_ports = {
     'X': None
 }
 
+corelog_controller_ports = {
+    'A': 1069,
+    'B': 1070,
+    'C': 1071,
+    'D': 1072,
+    'E': 1073,
+    'F': 1074,
+    'X': 1068   # default
+}
+
+moninj_controller_ports = {
+    'A': 1483,
+    'B': 1484,
+    'C': 1485,
+    'D': 1486,
+    'E': 1487,
+    'F': 1488,
+    'X': 1384   # default
+}
+
+moninj_proxy_ports = {
+    'A': 1583,
+    'B': 1584,
+    'C': 1585,
+    'D': 1586,
+    'E': 1587,
+    'F': 1588,
+    'X': 1383   # default
+}

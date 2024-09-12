@@ -11,15 +11,15 @@ device_db = {
     },
     "core_log": {
         "type": "controller",
-        "host": "::1",
-        "port": 1068,
+        "host": "172.31.91.201",
+        "port": 1074,
         "command": "aqctl_corelog -p {port} --bind {bind} " + core_addr
     },
     "core_moninj": {
         "type": "controller",
-        "host": "::1",
-        "port_proxy": 1383,
-        "port": 1384,
+        "host": "172.31.91.201",
+        "port_proxy": 1588,
+        "port": 1488,
         "command": "aqctl_moninj_proxy --port-proxy {port_proxy} --port-control {port} --bind {bind} " + core_addr
     },
     "core_cache": {
@@ -260,7 +260,7 @@ device_db["phaser0"] = {
 
 device_db["scope"] = {
     "type": "controller",
-    "host": "::1",
+    "host": "172.31.91.201",
     "port": 3260,
     "scope_ip": "192.168.95.157",
     "command": "aqctl_tektronix_osc -p {port} --ip {scope_ip}"

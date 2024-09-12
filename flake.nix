@@ -47,7 +47,7 @@
             artiq_tektronix_osc
           ]))
           # Non-Python packages
-          # artiq-full.openocd-bscanspi # needed for flashing boards, also provides proxy bitstreams
+          artiq-full.openocd-bscanspi # needed for flashing boards, also provides proxy bitstreams
         ];
       };
       # Enables use of `nix fmt`

@@ -11,15 +11,15 @@ device_db = {{
     }},
     "core_log": {{
         "type": "controller",
-        "host": "::1",
-        "port": 1068,
+        "host": "{ctl_host}",
+        "port": {corelog_ctl_port},
         "command": "aqctl_corelog -p {{port}} --bind {{bind}} " + core_addr
     }},
     "core_moninj": {{
         "type": "controller",
-        "host": "::1",
-        "port_proxy": 1383,
-        "port": 1384,
+        "host": "{ctl_host}",
+        "port_proxy": {moninj_proxy_port},
+        "port": {moninj_ctl_port},
         "command": "aqctl_moninj_proxy --port-proxy {{port_proxy}} --port-control {{port}} --bind {{bind}} " + core_addr
     }},
     "core_cache": {{
@@ -262,7 +262,7 @@ scope_template = """
 
 device_db["scope"] = {{
     "type": "controller",
-    "host": "{scope_ctl_host}",
+    "host": "{ctl_host}",
     "port": {scope_ctl_port},
     "scope_ip": "{scope_ip}",
     "command": "aqctl_tektronix_osc -p {{port}} --ip {{scope_ip}}"

@@ -11,13 +11,13 @@ device_db = {
     },
     "core_log": {
         "type": "controller",
-        "host": "::1",
+        "host": "172.31.91.201",
         "port": 1068,
         "command": "aqctl_corelog -p {port} --bind {bind} " + core_addr
     },
     "core_moninj": {
         "type": "controller",
-        "host": "::1",
+        "host": "172.31.91.201",
         "port_proxy": 1383,
         "port": 1384,
         "command": "aqctl_moninj_proxy --port-proxy {port_proxy} --port-control {port} --bind {bind} " + core_addr
