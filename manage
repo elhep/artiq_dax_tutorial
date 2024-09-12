@@ -135,7 +135,8 @@ elif args.command == "session":
         sys.executable, 
         "-u", "-m", 
         "artiq.frontend.artiq_master",
-        "--device-db", f"device_db_{args.system.lower()}.py"
+        "--device-db", f"device_db_{args.system.lower()}.py",
+        "--bind", "'*'"
     ]
     ctlmgr_cmd    = [
         sys.executable,
