@@ -85,6 +85,7 @@ master_control_ports = {
     'D': 3264,
     'E': 3265,
     'F': 3266,
+    'X': 3251   # default
 }
 
 master_logging_ports = {
