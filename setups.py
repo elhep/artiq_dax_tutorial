@@ -107,3 +107,13 @@ master_broadcast_ports = {
     'F': 1165,
     'X': 1067   # default
 }
+
+ctlmgr_control_ports = {
+    'A': 3271,
+    'B': 3272,
+    'C': 3273,
+    'D': 3274,
+    'E': 3275,
+    'F': 3276,
+    'X': 3249   # default
+}
