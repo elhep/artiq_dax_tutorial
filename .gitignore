@@ -1,3 +1,5 @@
 .direnv/**
 **.pyc
 **.pyon
+**.h5
+experiments/**.png

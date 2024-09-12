@@ -49,13 +49,6 @@ device_db = {
 
 # master peripherals
 
-device_db["dio_dirctl"] = {
-    "type": "local",
-    "module": "artiq.coredevice.i2c",
-    "class": "PCF8574A",
-    "arguments": {}
-}
-
 device_db["ttl0"] = {
     "type": "local",
     "module": "artiq.coredevice.ttl",

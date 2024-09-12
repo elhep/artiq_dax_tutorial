@@ -162,11 +162,11 @@
     "src-artiq_tektronix_osc": {
       "flake": false,
       "locked": {
-        "lastModified": 1726137314,
-        "narHash": "sha256-eVvTahPO+DpULw0J2AusOuKu6YDYGHEiq4Bb/gsx3UY=",
+        "lastModified": 1726143368,
+        "narHash": "sha256-PZ2xHG2Sb6HAyDU4MfP0re0hRh6NOcZtYcQxe1iQYDs=",
         "owner": "elhep",
         "repo": "artiq_tektronix_oscilloscope",
-        "rev": "ea9c37f099a6596825a96feb99d1e32333286723",
+        "rev": "a74b5c9396b138878840964aae04c97861202e0f",
         "type": "github"
       },
       "original": {
