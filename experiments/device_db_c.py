@@ -268,7 +268,7 @@ device_db["phaser0"] = {
 device_db["scope"] = {
     "type": "controller",
     "host": "::1",
-    "port": 3251,
+    "port": 3257,
     "scope_ip": "192.168.95.164",
-    "command": "aqctl_tektronix_osc -p {port} {scope_ip}"
+    "command": "aqctl_tektronix_osc -p {port} --ip {scope_ip}"
 }
