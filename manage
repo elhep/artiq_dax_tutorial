@@ -43,6 +43,10 @@ session_parser = subparsers.add_parser('session')
 session_parser.add_argument('--system', '-s', type=str, required=True, help="which system to get serial from (A or B or .. F)")
 session_parser.add_argument('--master-ip', type=str, default="::1", required=False, help="Master IP address")
 
+update_scripts_parser = subparsers.add_parser('update-scripts')
+update_scripts_parser.add_argument('--system', '-s', type=str, required=True, help="which system to restart (A or B or .. F or X or 'all' for all)")
+update_scripts_parser.add_argument('--master-ip', type=str, default="::1", required=False, help="Master IP address")
+
 dashboard_parser = subparsers.add_parser('dashboard')
 dashboard_parser.add_argument('--system', '-s', type=str, required=True, help="which system to get serial from (A or B or .. F)")
 dashboard_parser.add_argument('--master-ip', type=str, default="::1", required=False, help="Master IP address")
@@ -132,6 +136,49 @@ elif args.command == "ddb":
                     scope_ctl_port=scope_ctl_port,
                     scope_ip=scope_ip))
 
+elif args.command == "update-scripts":
+    systems = []
+    if args.system == 'all':
+        systems = [system for system in ftdi_mapping.keys()]     
+    else:
+        systems = [args.system]
+
+    for system in systems:
+        ddb_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                                'experiments', f'device_db_{system.lower()}.py')
+        master_cmd = [
+            # sys.executable,
+            # "-u", "-m", 
+            # "artiq.frontend.artiq_master",
+            "artiq_master",
+            "--device-db", f"device_db_{system.lower()}.py",
+            "--bind", "*",
+            "--port-notify", str(master_notify_ports[system]),
+            "--port-control", str(master_control_ports[system]),
+            "--port-logging", str(master_logging_ports[system]),
+            "--port-broadcast", str(master_broadcast_ports[system]),
+            "--name", f"\"System {system}\"",
+        ]
+        ctlmgr_cmd = [
+            # sys.executable,
+            # "-m", 
+            # "artiq_comtools.artiq_ctlmgr",
+            "artiq_ctlmgr",
+            "--server", args.master_ip,
+            "--port-notify", str(master_notify_ports[system]),
+            "--port-logging", str(master_logging_ports[system]),
+            "--port-control", str(ctlmgr_control_ports[system]),
+        ]
+
+        script_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                                'scripts', f'session_{system.lower()}')
+
+        with open(script_path, 'w') as f:
+            f.write(f"#!/bin/bash\n\n")
+            f.write(" ".join(master_cmd) + " &\n\n")
+            f.write("sleep 5\n\n")
+            f.write(" ".join(ctlmgr_cmd) + "\n")
+
 elif args.command == "session":
     assert args.system in ['A', 'B', 'C', 'D', 'E', 'F'], "Invalid system, only A-F are allowed, one at a time"
 
@@ -156,6 +203,8 @@ elif args.command == "session":
         "--port-logging", str(master_logging_ports[args.system]),
         "--port-control", str(ctlmgr_control_ports[args.system]),
     ]
+
+    
 
     with subprocess.Popen(master_cmd,
                           cwd=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'experiments'),

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+artiq_master --device-db device_db_c.py --bind * --port-notify 3252 --port-control 3263 --port-logging 1062 --port-broadcast 1162 --name "System C" &
+
+sleep 5
+
+artiq_ctlmgr --server 172.31.91.201 --port-notify 3252 --port-logging 1062 --port-control 3273
