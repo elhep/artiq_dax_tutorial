@@ -4,7 +4,8 @@ import subprocess
 import argparse
 import os
 import tempfile
-from setups import ftdi_mapping, ip_mapping
+from setups import ftdi_mapping, ip_mapping, scope_ip_mapping, scope_controller_ports
+from templates import device_db_template, scope_template
 
 
 serial_mapping = {}
@@ -35,13 +36,15 @@ serial_parser.add_argument('--system', '-s', type=str, required=True, help="whic
 
 device_db_parser = subparsers.add_parser('ddb')
 device_db_parser.add_argument('--system', '-s', type=str, required=True, help="which system to restart (A or B or .. F or X or 'all' for all)")
+device_db_parser.add_argument('--scope-ctl-host', type=str, default="::1", required=False, help="Oscilloscope controller host")
+device_db_parser.add_argument('--scope-ctl-port', type=str, required=False, help="Oscilloscope controller port")
 
 args = parser.parse_args()
 
 if args.command == 'flash':    
     systems = []
     if args.system == 'all':
-        systems = ftdi_mapping.keys().remove('X')
+        systems = [system for system in ftdi_mapping.keys() if system != 'X']
         ips = [ip_mapping[system] for system in systems]
     else:
         systems = [args.system]
@@ -71,7 +74,7 @@ if args.command == 'flash':
 elif args.command == 'restart':
     systems = []
     if args.system == 'all':
-        systems = ftdi_mapping.keys().remove('X')
+        systems = [system for system in ftdi_mapping.keys() if system != 'X']
     else:
         systems = [args.system]
 
@@ -95,20 +98,27 @@ elif args.command == 'serial':
 elif args.command == "ddb":
     systems = []
     if args.system == 'all':
-        systems = ftdi_mapping.keys()
-        ips = [ip_mapping[system] for system in systems]
+        systems = [system for system in ftdi_mapping.keys() if system != 'X']     
     else:
         systems = [args.system]
-        ips = [ip_mapping[args.system]]
 
     expeirments_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'experiments')
-    ddb_template_path = os.path.join(expeirments_path, 'ddb_tmp.py')
-    
-    with open(ddb_template_path, 'r') as f:
-        ddb_template = f.read()
-    for system, ip in zip(systems, ips):
+       
+    for system in systems:
+        core_ip = ip_mapping[system]
+        scope_ip = scope_ip_mapping[system]
+        scope_ctl_port = scope_controller_ports[system]
+        scope_ctl_host = args.scope_ctl_host
+
         with open(os.path.join(expeirments_path, f"device_db_{system.lower()}.py"), 'w') as f:
-            f.write(ddb_template.replace("%%core_ip%%", ip).replace("%%system%%", system))
+            f.write(device_db_template.format(
+                core_ip=core_ip,
+                system=system))
+            if scope_ip is not None and scope_ctl_port is not None:
+                f.write(scope_template.format(
+                    scope_ctl_host=scope_ctl_host,
+                    scope_ctl_port=scope_ctl_port,
+                    scope_ip=scope_ip))
 
 
 else:

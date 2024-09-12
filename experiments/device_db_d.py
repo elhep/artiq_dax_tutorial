@@ -264,3 +264,11 @@ device_db["phaser0"] = {
         "miso_delay": 1,
     }
 }
+
+device_db["scope"] = {
+    "type": "controller",
+    "host": "::1",
+    "port": 3252,
+    "scope_ip": "192.168.95.181",
+    "command": "aqctl_tektronix_osc -p {port} {scope_ip}"
+}
