@@ -43,6 +43,10 @@ session_parser = subparsers.add_parser('session')
 session_parser.add_argument('--system', '-s', type=str, required=True, help="which system to get serial from (A or B or .. F)")
 session_parser.add_argument('--master-ip', type=str, default="::1", required=False, help="Master IP address")
 
+dashboard_parser = subparsers.add_parser('dashboard')
+dashboard_parser.add_argument('--system', '-s', type=str, required=True, help="which system to get serial from (A or B or .. F)")
+dashboard_parser.add_argument('--master-ip', type=str, default="::1", required=False, help="Master IP address")
+
 args = parser.parse_args()
 
 if args.command == 'flash':    
@@ -170,6 +174,20 @@ elif args.command == "session":
         else:
             print("Master failed to start, exiting.")
 
+elif args.command == "dashboard":
+    assert args.system in ['A', 'B', 'C', 'D', 'E', 'F'], "Invalid system, only A-F are allowed, one at a time"
+
+    dashboard_cmd = [
+        sys.executable,
+        "-m",
+        "artiq.frontend.artiq_dashboard",
+        "--server", args.master_ip,
+        "--port-notify", str(master_notify_ports[args.system]),
+        "--port-control", str(master_control_ports[args.system]),
+        "--port-broadcast", str(master_broadcast_ports[args.system]),
+    ]
+    with subprocess.Popen(dashboard_cmd):
+        pass
 
 
 else:
