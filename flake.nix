@@ -57,6 +57,9 @@
             artiq-full.artiq-comtools
             # ps.paramiko # needed for flashing boards remotely (artiq_flash -H)
             artiq_tektronix_osc
+
+            # Packages for testing
+            ps.pytest
           ]))
           # Non-Python packages
           artiq-full.openocd-bscanspi # needed for flashing boards, also provides proxy bitstreams

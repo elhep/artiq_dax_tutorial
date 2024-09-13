@@ -265,4 +265,4 @@ device_db["phaser0"] = {
 #     "scope_ip": "192.168.95.182",
 #     "command": "aqctl_tektronix_osc -p {port} --ip {scope_ip} --bind {bind}"
 # }
-enable_dax_sim(device_db, exclude={'core_moninj'}, moninj_service=True)
+enable_dax_sim(device_db, enable=True, exclude={'core_moninj'}, moninj_service=True)
