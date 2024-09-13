@@ -12,8 +12,8 @@ class Yb171TestCase(dax.sim.test_case.PeekTestCase):
         self.sys.dax_init()
 
     def test_set_num_ions(self):
-        self.assertEqual(self.sys.qubit_yb171.num_ions, 0)
+        self.assertEqual(self.sys.properties.num_ions, 0)
         for _ in range(10):
             test_val = random.randrange(25)
-            self.sys.qubit_yb171.set_num_ions(test_val)
-            self.assertEqual(self.sys.qubit_yb171.num_ions, test_val)
+            self.sys.properties.set_num_ions(test_val)
+            self.assertEqual(self.sys.properties.num_ions, test_val)

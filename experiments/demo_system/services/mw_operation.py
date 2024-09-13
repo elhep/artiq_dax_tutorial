@@ -3,7 +3,7 @@ import numpy as np
 from dax.experiment import *
 from dax.interfaces.operation import OperationInterface
 
-from demo_system.modules.qubit_yb171 import SystemModule
+from demo_system.modules.properties import PropertiesModule
 from demo_system.modules.microwave import MicrowaveModule
 from demo_system.modules.pmt import PmtModule
 from demo_system.services.state import StateService
@@ -34,7 +34,7 @@ class MicrowaveOperationService(DaxService, OperationInterface):
         )
 
         # Get modules and services
-        self._yb171 = self.registry.find_module(SystemModule)
+        self._yb171 = self.registry.find_module(PropertiesModule)
         self._microwave = self.registry.find_module(MicrowaveModule)
         self._pmt = self.registry.find_module(PmtModule)
         self._state = self.registry.get_service(StateService)

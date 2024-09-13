@@ -7,7 +7,7 @@ from dax.util.ccb import get_ccb_tool
 
 from demo_system.modules.ablation import AblationModule
 from demo_system.modules.pmt import PmtModule
-from demo_system.modules.qubit_yb171 import SystemModule
+from demo_system.modules.properties import PropertiesModule
 
 from demo_system.services.cool_prep import CoolInitService
 from demo_system.services.detection import DetectionService
@@ -56,7 +56,7 @@ class IonLoadService(DaxService):
     def build(self) -> None:
         # Get modules
         self._ablation = self.registry.find_module(AblationModule)
-        self._yb171 = self.registry.find_module(SystemModule)
+        self._yb171 = self.registry.find_module(PropertiesModule)
 
         self.update_kernel_invariants('_ablation')
 

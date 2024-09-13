@@ -263,6 +263,6 @@ device_db["scope"] = {
     "host": "::1",
     "port": 4000,
     "scope_ip": "192.168.95.182",
-    "command": "aqctl_tektronix_osc -p {port} --ip {scope_ip} --bind {bind} -s"
+    "command": "aqctl_tektronix_osc -p {port} --ip {scope_ip} --bind {bind}"
 }
 enable_dax_sim(device_db, enable=True, exclude={'core_moninj'}, moninj_service=True)

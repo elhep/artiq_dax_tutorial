@@ -3,7 +3,7 @@ import numpy as np
 from dax.experiment import *
 
 
-class SystemModule(DaxModule):
+class PropertiesModule(DaxModule):
     """Meta-module for storing system properties.
 
     This module contains optional attributes that are only available when the value has been stored before.

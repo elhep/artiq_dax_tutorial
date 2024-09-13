@@ -4,12 +4,13 @@ from dax.modules.rpc_benchmark import RpcBenchmarkModule
 from dax.modules.rtio_benchmark import RtioLoopBenchmarkModule
 from dax.modules.cpld_init import CpldInitModule
 
-from demo_system.modules.qubit_yb171 import SystemModule
+from demo_system.modules.properties import PropertiesModule
 from demo_system.modules.cw_laser import Laser355, Laser370
 from demo_system.modules.pmt import PmtModule
 from demo_system.modules.ablation import AblationModule
 from demo_system.modules.trigger_ttl import TriggerTTLModule
 from demo_system.modules.microwave import MicrowaveModule
+from demo_system.modules.scope import ScopeModule
 
 from demo_system.services.ion_load import IonLoadService
 from demo_system.services.detection import DetectionService
@@ -41,7 +42,7 @@ class DemoSystem(DaxSystem):
         self.update_kernel_invariants("rpc_bench", "rtio_bench", "cpld")
 
         # Add meta-modules
-        self.qubit_yb171 = SystemModule(self, "qubit_yb171")
+        self.properties = PropertiesModule(self, "properties")
 
         # Get system configuration (read-only)
         mon_pmt_enabled: bool = self.get_dataset_sys(self.MON_PMT_ENABLED_KEY)
@@ -56,7 +57,8 @@ class DemoSystem(DaxSystem):
         self.ablation = AblationModule(self, "ablation")
         self.trigger_ttl = TriggerTTLModule(self, "trigger_ttl")
         self.microwave = MicrowaveModule(self, "microwave")
-        self.update_kernel_invariants("l355", "l370", "pmt", "ablation", "trigger_ttl", "microwave")
+        self.scope2 = ScopeModule(self, "scope2")
+        self.update_kernel_invariants("l355", "l370", "pmt", "ablation", "trigger_ttl", "microwave", "scope2")
 
         # Add other devices
         self.scheduler = self.get_device("scheduler")
