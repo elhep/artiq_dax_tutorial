@@ -4,6 +4,7 @@ from dax.util.sub_experiment import SubExperiment
 from repository.dax.util.dax.dax_init import DaxInit
 from repository.dax.util.dataset_config.system_config import SystemConfig
 
+
 class DaxSetup(DemoSystem, Experiment):
     """Dax Setup"""
 
@@ -19,7 +20,6 @@ class DaxSetup(DemoSystem, Experiment):
         except KeyError:
             # Could not find key and system config might not be available, fallback on defaults
             self.logger.error('No current configuration exists yet, run this utility once to set a configuration')
-            mon_pmt_enabled = False
 
     def run(self):
         sub_experiment = SubExperiment(self, self._managers)

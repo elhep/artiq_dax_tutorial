@@ -60,6 +60,7 @@
 
             # Packages for testing
             ps.pytest
+            ps.coverage
           ]))
           # Non-Python packages
           artiq-full.openocd-bscanspi # needed for flashing boards, also provides proxy bitstreams

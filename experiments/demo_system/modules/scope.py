@@ -6,7 +6,6 @@ class ScopeModule(DaxModule):
     Module to control textronix scope used in the demo
     """
 
-
     def build(self) -> None:
         # Get the controller
         self.in_sim = '_dax_sim_config' in self.get_device_db()
@@ -102,7 +101,7 @@ class ScopeModule(DaxModule):
             sleep(3)
 
     @host_only
-    def get_image(self, filename = "scope.png") -> None:
+    def get_image(self, filename="scope.png") -> None:
         if not self.in_sim:
             with open(filename, "wb") as f:
                 f.write(self._scope.get_screen_png())
