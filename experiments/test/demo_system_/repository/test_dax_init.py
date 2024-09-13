@@ -4,6 +4,7 @@ from test.demo_system_.util.test_experiment_base import ExperimentTestBase
 
 from repository.dax.util.dax.dax_init import DaxInit, Idle, SafetyOff
 
+
 @pytest.mark.repository
 class DaxInitTestCase(ExperimentTestBase):
     __test__ = True

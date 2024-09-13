@@ -2,8 +2,6 @@ import pytest
 
 from test.demo_system_.util.test_experiment_base import ExperimentTestBase
 
-from demo_system.system import *
-
 
 from repository.dax.calibration.microwave.detection_efficiency import DetectionEfficiency
 from repository.dax.calibration.microwave.gate_repeat import MicrowaveGateRepeatScan
@@ -15,6 +13,8 @@ from repository.dax.calibration.microwave.ramsey_time import MicrowaveRamseyTime
 from repository.dax.calibration.microwave.spin_echo_time import MicrowaveSpinEcho
 
 n_samples = 1
+
+
 @pytest.mark.repository
 class InjectModulesTestCase(ExperimentTestBase):
 

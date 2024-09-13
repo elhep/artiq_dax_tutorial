@@ -16,7 +16,7 @@ class PmtModule(DaxModule):
     """Total number of channels"""
 
     # PMT TTL and EC device keys (linear orientation)
-    _PMT_TTL_KEYS = [f'ttl{i+4}' for i in range(NUM_CHANNELS)]
+    _PMT_TTL_KEYS = [f'ttl{i + 4}' for i in range(NUM_CHANNELS)]
     _PMT_EC_KEYS = [f'{k}_counter' for k in _PMT_TTL_KEYS]
     assert len(_PMT_EC_KEYS) == NUM_CHANNELS
 

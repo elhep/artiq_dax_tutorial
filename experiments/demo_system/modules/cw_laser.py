@@ -178,9 +178,9 @@ class Laser370(DaxModule):
             elif mode == MODES370.DETECT:
                 self._detect_prep_cool_dds.config_freq(self._detect_freq, realtime=realtime)
                 self._detect_prep_cool_dds.config_amp(self._detect_amp, realtime=realtime)
-            
+
             # Enable DDS
-            self._detect_prep_cool_dds.set(mode!=MODES370.OFF, realtime=realtime)  
+            self._detect_prep_cool_dds.set(mode != MODES370.OFF, realtime=realtime)
 
             # Enable Sidebands
             self._cool_sw.set(mode == MODES370.COOL, realtime=realtime)
@@ -194,7 +194,7 @@ class Laser370(DaxModule):
         :param state: `True` to open, `False` to close
         :param realtime: Compensate for programming latencies
         """
-        self._shutter.set(state, realtime=realtime)        
+        self._shutter.set(state, realtime=realtime)
 
 
 class Laser355(DaxModule):
@@ -222,7 +222,7 @@ class Laser355(DaxModule):
         self._dds_dict: typing.Dict[str, DDS9910] = {
             "shutter": self._shutter,
         }
-        
+
         self._dds_list = list(self._dds_dict.values())
         self._sw_list = list(self._sw_dict.values())
 

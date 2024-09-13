@@ -8,7 +8,6 @@ from repository.dax.util.inject_services.inject_detection import InjectDetection
 from repository.dax.util.inject_services.inject_ions import InjectNIons
 
 
-
 @pytest.mark.repository
 class InjectModulesTestCase(ExperimentTestBase):
     def test_inject_all(self):

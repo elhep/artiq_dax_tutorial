@@ -44,6 +44,7 @@ class Cooling(DaxService, BinaryStateController):
     def _doppler_set(self, state: TBool):
         self._370.set_state(mode=self._370.MODES.COOL, state=state, realtime=True)
 
+
 class Preparing(DaxService, BinaryStateController):
     SERVICE_NAME = "initialization"
 

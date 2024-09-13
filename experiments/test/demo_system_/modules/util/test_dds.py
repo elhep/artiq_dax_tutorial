@@ -1,9 +1,8 @@
-from numpy import int32, int64, random
+from numpy import int32, random
 import dax.sim.test_case
 
 from test.system import DemoTestSystem
 from dax.experiment import *
-
 
 
 class DDS9910TestCase(dax.sim.test_case.PeekTestCase):

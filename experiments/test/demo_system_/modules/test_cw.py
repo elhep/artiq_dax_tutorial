@@ -55,13 +55,19 @@ class L370TestCase(dax.sim.test_case.PeekTestCase):
         self.expect(self.sys.l370._cool_sw._sw, "state", mode == self.sys.l370.MODES.COOL)
         self.expect(self.sys.l370._detect_prep_cool_dds._dds.sw, "state", mode == self.sys.l370.MODES.DETECT
                     or mode == self.sys.l370.MODES.Prep or mode == self.sys.l370.MODES.COOL)
-        
+
         if mode == self.sys.l370.MODES.COOL:
-            self.expect_close(self.sys.l370._detect_prep_cool_dds._dds, "freq", self.sys.l370._cool_freq, places = self.freq_places)
-            self.expect_close(self.sys.l370._detect_prep_cool_dds._dds, "amp", self.sys.l370._cool_amp, places = self.amp_places)
+            self.expect_close(self.sys.l370._detect_prep_cool_dds._dds, "freq",
+                              self.sys.l370._cool_freq, places=self.freq_places)
+            self.expect_close(self.sys.l370._detect_prep_cool_dds._dds, "amp",
+                              self.sys.l370._cool_amp, places=self.amp_places)
         elif mode == self.sys.l370.MODES.Prep:
-            self.expect_close(self.sys.l370._detect_prep_cool_dds._dds, "freq", self.sys.l370._prep_freq, places = self.freq_places)
-            self.expect_close(self.sys.l370._detect_prep_cool_dds._dds, "amp", self.sys.l370._prep_amp, places = self.amp_places)
+            self.expect_close(self.sys.l370._detect_prep_cool_dds._dds, "freq",
+                              self.sys.l370._prep_freq, places=self.freq_places)
+            self.expect_close(self.sys.l370._detect_prep_cool_dds._dds, "amp",
+                              self.sys.l370._prep_amp, places=self.amp_places)
         elif mode == self.sys.l370.MODES.DETECT:
-            self.expect_close(self.sys.l370._detect_prep_cool_dds._dds, "freq", self.sys.l370._detect_freq, places = self.freq_places)
-            self.expect_close(self.sys.l370._detect_prep_cool_dds._dds, "amp", self.sys.l370._detect_amp, places = self.amp_places)
+            self.expect_close(self.sys.l370._detect_prep_cool_dds._dds, "freq",
+                              self.sys.l370._detect_freq, places=self.freq_places)
+            self.expect_close(self.sys.l370._detect_prep_cool_dds._dds, "amp",
+                              self.sys.l370._detect_amp, places=self.amp_places)

@@ -9,7 +9,8 @@ class SystemTestCase(dax.sim.test_case.PeekTestCase):
 
     def test_kernel_invariants(self):
         # Construct system environment
-        env = self.construct_env(DemoTestSystem, device_db="device_db_sim.py", build_kwargs={'mon_pmt_enabled': self.MON_PMT_ENABLED})
+        env = self.construct_env(DemoTestSystem, device_db="device_db_sim.py",
+                                 build_kwargs={'mon_pmt_enabled': self.MON_PMT_ENABLED})
         env.dax_init()
 
         # Test modules

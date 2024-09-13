@@ -1,6 +1,7 @@
 from demo_system.modules.util.switch import Switch
 from demo_system.modules.util.state_controller import BinaryStateController
 
+
 class TriggerTTLModule(Switch, BinaryStateController):
 
     def build(self):

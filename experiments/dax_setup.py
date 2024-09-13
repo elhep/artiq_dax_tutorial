@@ -1,5 +1,6 @@
 from demo_system.system import *
 
+
 class DaxSetup(DemoSystem, Experiment):
     """DaxSetup"""
 
@@ -18,6 +19,7 @@ class DaxSetup(DemoSystem, Experiment):
 
         # Initialize Dax
         self.dax_init()
+
 
 if __name__ == '__main__':
     from artiq.frontend.artiq_run import run

@@ -3,7 +3,6 @@ import typing
 from dax.experiment import *
 
 from demo_system.modules.util.dds import DDS9910
-from demo_system.modules.util.switch import Switch
 from demo_system.modules.util.state_controller import BinaryStateController
 
 
