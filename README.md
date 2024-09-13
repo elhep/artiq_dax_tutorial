@@ -74,7 +74,7 @@ Hardware is assigned as follows:
 | Device | Channel | Use | Module | 
 | --- | --- | --- | --- |
 | TTL Out | 0 | Scope Trigger | TriggerTTL |
-| TTL Out | 1 | Ablation Trigger | Bblation |
+| TTL Out | 1 | Ablation Trigger | Ablation |
 | TTL Out | 2 | Cooling Sideband | Laser370 |
 | TTL Out | 3 | RTIO Benchmark | RTIOBenchmarkModule |
 | TTL In | 4 | PMT 1 | PMT |
