@@ -100,5 +100,3 @@ To run unittest, run the following command at the root of this repository:
 ```
 pytest
 ```
-
-To ru
