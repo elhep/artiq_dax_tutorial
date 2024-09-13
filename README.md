@@ -85,3 +85,20 @@ Hardware is assigned as follows:
 | AD9910 | 1 | 370 Modulation | Laser370 |
 | AD9910 | 2 | 370 Shutter | Laser370 |
 | AD9910 | 3 | 355 Shutter | Laser355 |
+
+Before running the `artiq_session` or `artiq_run`, run the following command from the root of this repository:
+```
+artiq_run --device-db experiments/device_db_sim.py experiments/dax_setup.py -c DaxSetup -q
+```
+
+To run the `artiq_session` in sim mode, run the following command from the `experiments` directory
+```
+artiq_session -m=--device-db -m device_db_sim.py
+```
+
+To run unittest, run the following command at the root of this repository:
+```
+pytest
+```
+
+To ru
