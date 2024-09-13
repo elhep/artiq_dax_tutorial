@@ -8,7 +8,7 @@ from test.system import DemoTestSystem
 class TrapTestCase(dax.sim.test_case.PeekTestCase):
     def setUp(self):
         # Construct system environment
-        self.env = self.construct_env(DemoTestSystem, device_db="device_db_sim.py")
+        self.env = self.construct_env(DemoTestSystem, device_db="experiments/device_db_sim.py")
         # Initialize
         self.env.dax_init()
 

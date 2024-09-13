@@ -7,7 +7,7 @@ from test.system import DemoTestSystem
 class SwitchTestCase(dax.sim.test_case.PeekTestCase):
 
     def setUp(self) -> None:
-        self.sys = self.construct_env(DemoTestSystem, device_db="device_db_sim.py")
+        self.sys = self.construct_env(DemoTestSystem, device_db="experiments/device_db_sim.py")
         self.sys.dax_init()
 
         self.dut = self.sys.l370._cool_sw

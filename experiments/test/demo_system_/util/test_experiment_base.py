@@ -12,7 +12,7 @@ class ExperimentTestBase(dax.sim.test_case.PeekTestCase):
     experiments: list[EnvExperiment]
 
     def setUp(self):
-        self.sys = self.construct_env(DemoTestSystem, device_db="device_db_sim.py")
+        self.sys = self.construct_env(DemoTestSystem, device_db="experiments/device_db_sim.py")
         # self.sys.dax_init()
         self.sys.ion_load._update_num_ions(self.N_IONS)
 

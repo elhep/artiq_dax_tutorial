@@ -10,7 +10,7 @@ class BinaryStateControllerTestBase(dax.sim.test_case.PeekTestCase, abc.ABC):
     __test__ = False
 
     def setUp(self) -> None:
-        self.sys = self.construct_env(DemoTestSystem, device_db="device_db_sim.py")
+        self.sys = self.construct_env(DemoTestSystem, device_db="experiments/device_db_sim.py")
         self.sys.dax_init()
         self.initialize_test()
 

@@ -10,7 +10,7 @@ class SystemConfig(DemoSystem, EnvExperiment):
             super(SystemConfig, self).build()
         except KeyError:
             # Could not find key and system config might not be available, fallback on defaults
-            self.logger.error('No current configuration exists yet, run this utility once to set a configuration')
+            self.logger.info('No current configuration exists yet, run this utility once to set a configuration')
             mon_pmt_enabled = False
         else:
             # Obtain current system config (read-only), can raise a archive overwrite warning which can be ignored
