@@ -63,3 +63,25 @@ System |                     Status                      | Tested
    D   |         Flashed, signals not connected          |   No
    E   |         Flashed, signals not connected          |   No
    F   | Flashed, signals not connected, no oscilloscope |   No
+
+# DAX
+## Modules and Services
+The following plot shows the connection between modules and services used in this demo system
+![demos_system_modules-services](media/demo_system_modules-services.png)
+
+Hardware is assigned as follows:
+
+| Device | Channel | Use | Module | 
+| --- | --- | --- | --- |
+| TTL Out | 0 | Scope Trigger | TriggerTTL |
+| TTL Out | 1 | Ablation Trigger | Bblation |
+| TTL Out | 2 | Cooling Sideband | Laser370 |
+| TTL Out | 3 | RTIO Benchmark | RTIOBenchmarkModule |
+| TTL In | 4 | PMT 1 | PMT |
+| TTL In | 5 | PMT 2 | PMT |
+| TTL In | 6 | PMT 3 | PMT |
+| TTL In | 7 | RTIO Benchmark | RTIOBenchmarkModule |
+| AD9910 | 0 | Microwave | Microwav |
+| AD9910 | 1 | 370 Modulation | Laser370 |
+| AD9910 | 2 | 370 Shutter | Laser370 |
+| AD9910 | 3 | 355 Shutter | Laser355 |

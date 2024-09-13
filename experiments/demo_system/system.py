@@ -57,8 +57,8 @@ class DemoSystem(DaxSystem):
         self.ablation = AblationModule(self, "ablation")
         self.trigger_ttl = TriggerTTLModule(self, "trigger_ttl")
         self.microwave = MicrowaveModule(self, "microwave")
-        self.scope2 = ScopeModule(self, "scope2")
-        self.update_kernel_invariants("l355", "l370", "pmt", "ablation", "trigger_ttl", "microwave", "scope2")
+        self.scope = ScopeModule(self, "scope")
+        self.update_kernel_invariants("l355", "l370", "pmt", "ablation", "trigger_ttl", "microwave", "scope")
 
         # Add other devices
         self.scheduler = self.get_device("scheduler")
