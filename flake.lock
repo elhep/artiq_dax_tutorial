@@ -282,17 +282,18 @@
     "src-artiq_tektronix_osc": {
       "flake": false,
       "locked": {
-        "lastModified": 1726143368,
-        "narHash": "sha256-PZ2xHG2Sb6HAyDU4MfP0re0hRh6NOcZtYcQxe1iQYDs=",
-        "owner": "elhep",
-        "repo": "artiq_tektronix_oscilloscope",
-        "rev": "a74b5c9396b138878840964aae04c97861202e0f",
-        "type": "github"
+        "lastModified": 1726249198,
+        "narHash": "sha256-z3xdeLXsXqPUmnRsX3K1y+QWsdmYUkSQ+VxRcXgjfxA=",
+        "ref": "dev/dax_sim",
+        "rev": "cbca027377609e42ad5103780f0f089b28916fb5",
+        "revCount": 8,
+        "type": "git",
+        "url": "https://github.com/elhep/artiq_tektronix_oscilloscope.git"
       },
       "original": {
-        "owner": "elhep",
-        "repo": "artiq_tektronix_oscilloscope",
-        "type": "github"
+        "ref": "dev/dax_sim",
+        "type": "git",
+        "url": "https://github.com/elhep/artiq_tektronix_oscilloscope.git"
       }
     },
     "src-migen": {
