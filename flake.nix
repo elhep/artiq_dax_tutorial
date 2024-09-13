@@ -17,9 +17,16 @@
         sipyco.follows = "artiq/sipyco";
       };
     };
+    dax-applets = {
+      url = git+https://gitlab.com/duke-artiq/dax-applets.git;
+      inputs = {
+        artiqpkgs.follows = "artiq";
+        nixpkgs.follows = "artiq/nixpkgs";
+      };
+    };
   };
 
-  outputs = { self, artiq, artiq-comtools, artiq-extrapkg, nixpkgs, src-artiq_tektronix_osc, dax }:
+  outputs = { self, artiq, artiq-comtools, artiq-extrapkg, nixpkgs, src-artiq_tektronix_osc, dax, dax-applets }:
     let
       pkgs = import nixpkgs { system = "x86_64-linux"; };
       # Combine attribute sets for convenience
@@ -34,7 +41,8 @@
         patches = [ ./tektronix.patch ]; # setup.py tries to pull sipyco from git, fails
       };
 
-      daxpkgs = dax.packages.x86_64-linux;
+      dax_pkg = dax.packages.x86_64-linux;
+      dax-applets_pkg = dax-applets.packages.x86_64-linux;
 
     in
     {
@@ -47,8 +55,8 @@
             artiq-full.artiq
 
             # I need to build dax from source because artiq-extrapkg is pointing to dax release 6.7
-            daxpkgs.dax
-            daxpkgs.dax-applets
+            dax_pkg.dax
+            dax-applets_pkg.dax-applets
             # From artiq-extrapkg
             # artiq-full.dax
             # artiq-full.dax-applets

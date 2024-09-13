@@ -134,6 +134,30 @@
         "url": "https://gitlab.com/duke-artiq/dax.git"
       }
     },
+    "dax-applets": {
+      "inputs": {
+        "artiqpkgs": [
+          "artiq"
+        ],
+        "nixpkgs": [
+          "artiq",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1718374873,
+        "narHash": "sha256-XnTv8idkA64N9ihLRA61kEglCH1VvdkBtxIkzeudvRs=",
+        "ref": "refs/heads/master",
+        "rev": "e10a43add13c2bfd77534a38a7a2655dbb2cfabc",
+        "revCount": 104,
+        "type": "git",
+        "url": "https://gitlab.com/duke-artiq/dax-applets.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://gitlab.com/duke-artiq/dax-applets.git"
+      }
+    },
     "flake-utils": {
       "inputs": {
         "systems": "systems"
@@ -251,6 +275,7 @@
         ],
         "artiq-extrapkg": "artiq-extrapkg",
         "dax": "dax",
+        "dax-applets": "dax-applets",
         "nixpkgs": [
           "artiq",
           "nixpkgs"
