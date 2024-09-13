@@ -48,6 +48,7 @@
 
             # I need to build dax from source because artiq-extrapkg is pointing to dax release 6.7
             daxpkgs.dax
+            daxpkgs.dax-applets
             # From artiq-extrapkg
             # artiq-full.dax
             # artiq-full.dax-applets
