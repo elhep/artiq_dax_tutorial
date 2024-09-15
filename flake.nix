@@ -36,6 +36,8 @@
             # From the artiq flake
             artiq-full.artiq
 
+            artiq-full.misoc
+
             # From artiq-extrapkg
             artiq-full.dax
             # artiq-full.dax-applets
