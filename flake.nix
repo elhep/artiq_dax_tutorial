@@ -38,6 +38,8 @@
 
             artiq-full.misoc
 
+            ps.imageio
+
             # From artiq-extrapkg
             artiq-full.dax
             # artiq-full.dax-applets
