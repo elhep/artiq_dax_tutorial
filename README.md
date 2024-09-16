@@ -66,22 +66,20 @@ System |                     Status                      | Tested
 
 ## Deployment
 
-`deploy` command performs deployment of user-customized experiments
+`deploy` command performs deployment of user experiment directories 
 to the given directory `--target-dir`.
 
 In target directory 6 subdirectories are created, corresponding to
-6 different masters. They are called `master_a` for setup A etc.
+6 different masters. They are called `system_a` for setup A etc.
 
-Each of `master_<a..f>` directories consists of one subdirectory
+Each of `system_<a..f>` directories consists of one subdirectory
 holding experiment files called `repository` and `device_db.py` 
 file corresponding to a given setup.
 
 `repository` subdirectory consists of number of subdirectories
-for user experiments named by the pattern `user<n>`. The number
+for user experiments named by the pattern `user_<n>`. The number
 of such subdirectories depends on `--users` parameter.
 
-Each `master<m>/repository/user<n>` directory consists of copied
-from `experiments/repository` experiment files.
-
-If `--overwrite-all` is given, all existing files will be overwriten.
-Otherwise, one can pass `--overwrite-user <master a..f>:<user>`
+Each `system_<m>/repository/user_<n>` directory consists of experiment 
+files copied from `experiments/repository` and `user.py` file defining
+`user_id` Python variable

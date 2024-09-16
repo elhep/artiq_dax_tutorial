@@ -1,9 +1,0 @@
-#!/bin/bash
-
-cd experiments
-
-artiq_master --device-db device_db_b.py --bind '*' --port-notify 3251 --port-control 3262 --port-logging 1061 --port-broadcast 1161 --name "System B" &
-
-sleep 5
-
-artiq_ctlmgr --server 172.31.91.201 --port-notify 3251 --port-logging 1061 --port-control 3272
