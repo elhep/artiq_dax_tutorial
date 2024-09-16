@@ -10,6 +10,10 @@ from setups import *
 from templates import device_db_template, scope_template
 
 
+# =================================================================================================
+# Prepare mapping and constants
+# =================================================================================================
+
 serial_mapping = {}
 
 for system, ftdi_path in ftdi_mapping.items():
@@ -20,57 +24,104 @@ for system, ftdi_path in ftdi_mapping.items():
     path = path.replace(',', '.')
     serial_mapping[system] = f"/dev/serial/by-path/pci-0000:00:14.0-usb-0:{path}:1.2-port0"
 
+experiments_path = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), 'experiments')
+default_firmware_directory = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), 'firmware', 'qce24')
 
-# Create a subparser with command "flash"
+# =================================================================================================
+# Argument parsing
+# =================================================================================================
+
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(dest='command')
 
+# =================================================================================================
+
 flash_parser = subparsers.add_parser('flash')
-default_firmware_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'firmware', 'qce24')
-flash_parser.add_argument('--directory', '-d', type=str, default=default_firmware_directory, help="firmware directory")
-flash_parser.add_argument('--system', '-s', type=str, required=True, help="which system to flash (A or B or .. F or X or 'all' for all)")
+flash_parser.add_argument('--directory', '-d', type=str, default=default_firmware_directory, 
+                          help="firmware directory")
+flash_parser.add_argument('--system', '-s', type=str, required=True, 
+                          help="which system to flash (A or B or .. F or X or 'all' for all)")
+
+# =================================================================================================
 
 restart_parser = subparsers.add_parser('restart')
-restart_parser.add_argument('--system', '-s', type=str, required=True, help="which system to restart (A or B or .. F or X or 'all' for all)")
+restart_parser.add_argument('--system', '-s', type=str, required=True, 
+                            help="which system to restart (A or B or .. F or X or 'all' for all)")
+
+# =================================================================================================
 
 serial_parser = subparsers.add_parser('serial')
-serial_parser.add_argument('--system', '-s', type=str, required=True, help="which system to get serial from (A or B or .. F or X)")
+serial_parser.add_argument('--system', '-s', type=str, required=True, 
+                           help="which system to get serial from (A or B or .. F or X)")
+
+# =================================================================================================
 
 device_db_parser = subparsers.add_parser('ddb')
-device_db_parser.add_argument('--system', '-s', type=str, required=True, help="which system to restart (A or B or .. F or X or 'all' for all)")
-device_db_parser.add_argument('--ctl-host', type=str, default="::1", required=False, help="Oscilloscope controller host")
+device_db_parser.add_argument('--system', '-s', type=str, required=True, 
+                              help="which system to restart (A .. F or X or 'all' for all)")
+device_db_parser.add_argument('--ctl-host', type=str, default="::1", required=False, 
+                              help="Oscilloscope controller host")
+
+# =================================================================================================
 
 session_parser = subparsers.add_parser('session')
-session_parser.add_argument('--system', '-s', type=str, required=True, help="which system to get serial from (A or B or .. F)")
-session_parser.add_argument('--master-ip', type=str, default="::1", required=False, help="Master IP address")
+session_parser.add_argument('--system', '-s', type=str, required=True, 
+                            help="which system to get serial from (A or B or .. F)")
+session_parser.add_argument('--master-ip', type=str, default="::1", required=False, 
+                            help="Master IP address")
+
+# =================================================================================================
 
 update_scripts_parser = subparsers.add_parser('update-scripts')
-update_scripts_parser.add_argument('--system', '-s', type=str, required=True, help="which system to restart (A or B or .. F or X or 'all' for all)")
-update_scripts_parser.add_argument('--master-ip', type=str, default="::1", required=False, help="Master IP address")
+update_scripts_parser.add_argument('--system', '-s', type=str, required=True, 
+                                   help="which system to restart (A .. F or X or 'all' for all)")
+update_scripts_parser.add_argument('--master-ip', type=str, default="::1", required=False, 
+                                   help="Master IP address")
+
+# =================================================================================================
 
 dashboard_parser = subparsers.add_parser('dashboard')
-dashboard_parser.add_argument('--system', '-s', type=str, required=True, help="which system to get serial from (A or B or .. F)")
-dashboard_parser.add_argument('--master-ip', type=str, default="::1", required=False, help="Master IP address")
+dashboard_parser.add_argument('--system', '-s', type=str, required=True,
+                              help="which system to get serial from (A or B or .. F)")
+dashboard_parser.add_argument('--master-ip', type=str, default="::1", required=False, 
+                              help="Master IP address")
+
+# =================================================================================================
+
+deploy_parser = subparsers.add_parser('deploy')
+deploy_parser.add_argument('--target-dir', required=True, 
+                           help="Target directory to deploy the scripts")
+deploy_parser.add_argument('--useres', default=1, type=int, 
+                           help="Number of useres per setup")
+
+# =================================================================================================
 
 args = parser.parse_args()
 
-if args.command == 'flash':    
-    systems = []
+# =================================================================================================
+# Commands functions
+# =================================================================================================
+
+def get_systems_list(include_x=False):
     if args.system == 'all':
-        systems = [system for system in ftdi_mapping.keys() if system != 'X']
-        ips = [ip_mapping[system] for system in systems]
+        systems = [system for system in ftdi_mapping.keys() if (system != 'X' or include_x)]
     else:
         systems = [args.system]
-        ips = [ip_mapping[args.system]]
+    return systems
 
-    for system, ip in zip(systems, ips):
+# =================================================================================================
+
+def flash():
+    for system in get_systems_list():
         ftdi_path = ftdi_mapping[system]
         print("\n==> Flashing system ", system, f" with ftdi location {ftdi_path}\n")
         with tempfile.TemporaryDirectory() as tmpdirname:
             storage_path = os.path.join(tmpdirname, 'storge.img')
             subprocess.run([
                 'artiq_mkfs',
-                '-s', 'ip', ip,
+                '-s', 'ip', ip_mapping[system],
                 storage_path
             ])
             cmd = [
@@ -84,14 +135,10 @@ if args.command == 'flash':
             print(cmd)
             subprocess.run(cmd)
 
-elif args.command == 'restart':
-    systems = []
-    if args.system == 'all':
-        systems = [system for system in ftdi_mapping.keys() if system != 'X']
-    else:
-        systems = [args.system]
+# =================================================================================================
 
-    for system in systems:
+def restart():
+    for system in get_systems_list():
         print("\n==> Restarting system ", system, f" with ftdi location {ftdi_mapping[system]}\n")
         ftdi_path = ftdi_mapping[system]
         cmd = [
@@ -102,27 +149,23 @@ elif args.command == 'restart':
             cmd = [cmd[0], '-I', f'ftdi_location {ftdi_path}'] + cmd[1:]
         subprocess.run(cmd)
 
-elif args.command == 'serial':
+# =================================================================================================
+
+def serial():
     system = args.system
     print(f"\n==> Serial port for system {system} under {serial_mapping[system]}\n")
     print("\nTo exit press Ctrl + C\n")
     subprocess.run(['flterm', serial_mapping[system]])
 
-elif args.command == "ddb":
-    systems = []
-    if args.system == 'all':
-        systems = [system for system in ftdi_mapping.keys()]     
-    else:
-        systems = [args.system]
+# =================================================================================================
 
-    expeirments_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'experiments')
-       
-    for system in systems:
+def ddb():
+    for system in get_systems_list(include_x=True):
         scope_ip = scope_ip_mapping[system]
         scope_ctl_port = scope_controller_ports[system]
         scope_ctl_host = args.ctl_host
 
-        with open(os.path.join(expeirments_path, f"device_db_{system.lower()}.py"), 'w') as f:
+        with open(os.path.join(experiments_path, f"device_db_{system.lower()}.py"), 'w') as f:
             f.write(device_db_template.format(
                 core_ip=ip_mapping[system],
                 system=system,
@@ -137,17 +180,10 @@ elif args.command == "ddb":
                     scope_ctl_port=scope_ctl_port,
                     scope_ip=scope_ip))
 
-elif args.command == "update-scripts":
-    systems = []
-    if args.system == 'all':
-        systems = [system for system in ftdi_mapping.keys()]     
-    else:
-        systems = [args.system]
+# =================================================================================================
 
-    expeirments_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
-                                'experiments')
-
-    for system in systems:
+def update_master_scripts():
+    for system in get_systems_list(include_x=True):
         master_cmd = [
             # sys.executable,
             # "-u", "-m", 
@@ -185,8 +221,11 @@ elif args.command == "update-scripts":
         st = os.stat(script_path)
         os.chmod(script_path, st.st_mode | stat.S_IEXEC)
 
-elif args.command == "session":
-    assert args.system in ['A', 'B', 'C', 'D', 'E', 'F'], "Invalid system, only A-F are allowed, one at a time"
+# =================================================================================================
+
+def start_session():
+    assert args.system in ['A', 'B', 'C', 'D', 'E', 'F'], \
+        "Invalid system, only A-F are allowed, one at a time"
 
     master_cmd = [
         sys.executable, 
@@ -210,10 +249,8 @@ elif args.command == "session":
         "--port-control", str(ctlmgr_control_ports[args.system]),
     ]
 
-    
-
     with subprocess.Popen(master_cmd,
-                          cwd=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'experiments'),
+                          cwd=experiments_path,
                           stdout=subprocess.PIPE, universal_newlines=True,
                           bufsize=1) as master:
         master_ready = False
@@ -229,8 +266,11 @@ elif args.command == "session":
         else:
             print("Master failed to start, exiting.")
 
-elif args.command == "dashboard":
-    assert args.system in ['A', 'B', 'C', 'D', 'E', 'F'], "Invalid system, only A-F are allowed, one at a time"
+# =================================================================================================
+
+def dashboard():
+    assert args.system in ['A', 'B', 'C', 'D', 'E', 'F'], \
+        "Invalid system, only A-F are allowed, one at a time"
 
     dashboard_cmd = [
         sys.executable,
@@ -244,7 +284,37 @@ elif args.command == "dashboard":
     with subprocess.Popen(dashboard_cmd):
         pass
 
+# =================================================================================================
 
-else:
-    print("Invalid command")
-    exit(1)
+def deploy():
+    pass
+
+# =================================================================================================
+# Entrypoint function
+# =================================================================================================
+
+def main():
+    if args.command == 'flash':    
+        flash()
+    elif args.command == 'restart':
+        restart()
+    elif args.command == 'serial':
+        serial()
+    elif args.command == "ddb":
+        ddb()
+    elif args.command == "update-scripts":
+        update_master_scripts()
+    elif args.command == "session":
+        # start_session()
+        raise print("Session command was disabled due to faulty implementation")
+        exit(1)
+    elif args.command == "dashboard":
+        dashboard()
+    elif args.command == "deploy":
+        deploy()
+    else:
+        print("Invalid command")
+        exit(1)
+
+if __name__ == "__main__":
+    main()
