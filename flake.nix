@@ -44,7 +44,7 @@
       dax_pkg = dax.packages.x86_64-linux;
       dax-applets_pkg = dax-applets.packages.x86_64-linux;
 
-    in
+    in rec
     {
       # Default shell for `nix develop`
       devShells.x86_64-linux.default = pkgs.mkShell {
@@ -77,6 +77,10 @@
       };
       # Enables use of `nix fmt`
       formatter.x86_64-linux = pkgs.nixpkgs-fmt;
+      packages.x86_64-linux.default = pkgs.buildEnv{
+		name="qce24-artiq-tutorial";
+		paths = devShells.x86_64-linux.default.buildInputs;
+	};
     };
 
   # Settings to enable substitution from the M-Labs servers (avoiding local builds)
