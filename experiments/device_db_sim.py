@@ -1,6 +1,6 @@
-
-# QCE24 - System X
-core_addr = "192.168.1.70"
+from dax.sim import enable_dax_sim
+# QCE24 - System A
+core_addr = "192.168.95.213"
 
 device_db = {
     "core": {
@@ -12,14 +12,14 @@ device_db = {
     "core_log": {
         "type": "controller",
         "host": "::1",
-        "port": 1068,
+        "port": 2000,
         "command": "aqctl_corelog -p {port} --bind {bind} " + core_addr
     },
     "core_moninj": {
         "type": "controller",
         "host": "::1",
-        "port_proxy": 1383,
-        "port": 1384,
+        "port_proxy": 1583,
+        "port": 1483,
         "command": "aqctl_moninj_proxy --port-proxy {port_proxy} --port-control {port} --bind {bind} " + core_addr
     },
     "core_cache": {
@@ -257,3 +257,12 @@ device_db["phaser0"] = {
         "miso_delay": 1,
     }
 }
+
+device_db["scope"] = {
+    "type": "controller",
+    "host": "::1",
+    "port": 4000,
+    "scope_ip": "192.168.95.182",
+    "command": "aqctl_tektronix_osc -p {port} --ip {scope_ip} --bind {bind}"
+}
+enable_dax_sim(device_db, enable=True, exclude={'core_moninj'}, moninj_service=True)

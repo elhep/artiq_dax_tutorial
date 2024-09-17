@@ -1,6 +1,6 @@
 {
   inputs = {
-    src-artiq_tektronix_osc = { url = github:elhep/artiq_tektronix_oscilloscope; flake = false; };
+    src-artiq_tektronix_osc = { url = git+https://github.com/elhep/artiq_tektronix_oscilloscope.git?ref=dev/dax_sim; flake = false; };
     artiq.url = "git+https://github.com/m-labs/artiq.git?ref=release-7&rev=38c72fdab41679c300c235d960e87b9e06bea5b4";
     artiq-comtools.follows = "artiq/artiq-comtools";
     artiq-extrapkg = {
@@ -8,10 +8,25 @@
       inputs.artiq.follows = "artiq";
     };
     nixpkgs.follows = "artiq/nixpkgs";
-    
+
+    dax = {
+      url = git+https://gitlab.com/duke-artiq/dax.git;
+      inputs = {
+        artiqpkgs.follows = "artiq";
+        nixpkgs.follows = "artiq/nixpkgs";
+        sipyco.follows = "artiq/sipyco";
+      };
+    };
+    dax-applets = {
+      url = git+https://gitlab.com/duke-artiq/dax-applets.git;
+      inputs = {
+        artiqpkgs.follows = "artiq";
+        nixpkgs.follows = "artiq/nixpkgs";
+      };
+    };
   };
 
-  outputs = { self, artiq, artiq-comtools, artiq-extrapkg, nixpkgs, src-artiq_tektronix_osc }:
+  outputs = { self, artiq, artiq-comtools, artiq-extrapkg, nixpkgs, src-artiq_tektronix_osc, dax, dax-applets }:
     let
       pkgs = import nixpkgs { system = "x86_64-linux"; };
       # Combine attribute sets for convenience
@@ -26,7 +41,10 @@
         patches = [ ./tektronix.patch ]; # setup.py tries to pull sipyco from git, fails
       };
 
-    in
+      dax_pkg = dax.packages.x86_64-linux;
+      dax-applets_pkg = dax-applets.packages.x86_64-linux;
+
+    in rec
     {
       # Default shell for `nix develop`
       devShells.x86_64-linux.default = pkgs.mkShell {
@@ -35,13 +53,13 @@
           (pkgs.python3.withPackages (ps: [
             # From the artiq flake
             artiq-full.artiq
-
             artiq-full.misoc
-
             ps.imageio
-
+            # I need to build dax from source because artiq-extrapkg is pointing to dax release 6.7
+            dax_pkg.dax
+            dax-applets_pkg.dax-applets
             # From artiq-extrapkg
-            artiq-full.dax
+            # artiq-full.dax
             # artiq-full.dax-applets
             # artiq-full.flake8-artiq
 
@@ -49,6 +67,10 @@
             artiq-full.artiq-comtools
             # ps.paramiko # needed for flashing boards remotely (artiq_flash -H)
             artiq_tektronix_osc
+
+            # Packages for testing
+            ps.pytest
+            ps.coverage
           ]))
           # Non-Python packages
           artiq-full.openocd-bscanspi # needed for flashing boards, also provides proxy bitstreams
@@ -56,6 +78,10 @@
       };
       # Enables use of `nix fmt`
       formatter.x86_64-linux = pkgs.nixpkgs-fmt;
+      packages.x86_64-linux.default = pkgs.buildEnv{
+		name="qce24-artiq-tutorial";
+		paths = devShells.x86_64-linux.default.buildInputs;
+	};
     };
 
   # Settings to enable substitution from the M-Labs servers (avoiding local builds)

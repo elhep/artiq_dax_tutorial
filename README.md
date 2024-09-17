@@ -83,3 +83,42 @@ of such subdirectories depends on `--users` parameter.
 Each `system_<m>/repository/user_<n>` directory consists of experiment 
 files copied from `experiments/repository` and `user.py` file defining
 `user_id` Python variable
+
+# DAX
+
+## Modules and Services
+
+The following plot shows the connection between modules and services used in this demo system
+![demos_system_modules-services](media/demo_system_modules-services.png)
+
+Hardware is assigned as follows:
+
+| Device | Channel | Use | Module | 
+| --- | --- | --- | --- |
+| TTL Out | 0 | Scope Trigger | TriggerTTL |
+| TTL Out | 1 | Ablation Trigger | Ablation |
+| TTL Out | 2 | Cooling Sideband | Laser370 |
+| TTL Out | 3 | RTIO Benchmark | RTIOBenchmarkModule |
+| TTL In | 4 | PMT 1 | PMT |
+| TTL In | 5 | PMT 2 | PMT |
+| TTL In | 6 | PMT 3 | PMT |
+| TTL In | 7 | RTIO Benchmark | RTIOBenchmarkModule |
+| AD9910 | 0 | Microwave | Microwav |
+| AD9910 | 1 | 370 Modulation | Laser370 |
+| AD9910 | 2 | 370 Shutter | Laser370 |
+| AD9910 | 3 | 355 Shutter | Laser355 |
+
+Before running the `artiq_session` or `artiq_run`, run the following command from the `experiments` directory of this repository:
+```
+artiq_run --device-db device_db_sim.py dax_setup.py -c DaxSetup -q
+```
+
+To run the `artiq_session` in sim mode, run the following command from the `experiments` directory
+```
+artiq_session -m=--device-db -m device_db_sim.py
+```
+
+To run unittest, run the following command at the root of this repository:
+```
+pytest
+```
