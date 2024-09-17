@@ -69,14 +69,6 @@ device_db_parser.add_argument('--ctl-host', type=str, default="::1", required=Fa
 
 # =================================================================================================
 
-session_parser = subparsers.add_parser('session')
-session_parser.add_argument('--system', '-s', type=str, required=True, 
-                            help="which system to get serial from (A or B or .. F)")
-session_parser.add_argument('--master-ip', type=str, default="::1", required=False, 
-                            help="Master IP address")
-
-# =================================================================================================
-
 update_scripts_parser = subparsers.add_parser('update-scripts')
 update_scripts_parser.add_argument('--output', default="./scripts",
                                    help="Scripts output path")
@@ -98,12 +90,16 @@ dashboard_parser.add_argument('--master-ip', type=str, default="::1", required=F
 # =================================================================================================
 
 deploy_parser = subparsers.add_parser('deploy')
-deploy_parser.add_argument('--system', '-s', type=str, required=True,
-                              help="Create files for given system (A..F or all)")
-deploy_parser.add_argument('--target-dir', required=True, 
-                           help="Target directory to deploy the scripts")
-deploy_parser.add_argument('--users', default=1, type=int, 
-                           help="Number of users per setup")
+deploy_parser.add_argument('--system', '-s', type=str, default='all',
+                              help="Create files for given system (A..F or all, defaults to all)")
+deploy_parser.add_argument('--deploy-dir', default="./deploy", 
+                           help="Target directory for deployment (defaults to ./deploy)")
+deploy_parser.add_argument('--users', default=12, type=int, 
+                           help="Number of users per setup (defaults to 12)")
+deploy_parser.add_argument('--master-ip', type=str, default="::1", required=False, 
+                           help="Master IP address (defaults to ::1)")
+deploy_parser.add_argument('--ctl-host', type=str,
+                              help="Oscilloscope controller host (defaults to master-ip)")
 deploy_parser.add_argument('--overwrite-system', action='store_true', 
                            help="Overwrite files in the target directory for given system(s)")
 deploy_parser.add_argument('--user', type=str, 
@@ -189,114 +185,72 @@ def serial():
 
 # =================================================================================================
 
+def generate_ddb(target_path, system, ctl_host, scope_ip, scope_ctl_host, scope_ctl_port):
+    with open(target_path, 'w') as f:
+        f.write(device_db_template.format(
+            core_ip=ip_mapping[system],
+            system=system,
+            ctl_host=ctl_host,
+            corelog_ctl_port=corelog_controller_ports[system],
+            moninj_proxy_port=moninj_proxy_ports[system],
+            moninj_ctl_port=moninj_controller_ports[system]
+        ))
+        if scope_ip is not None and scope_ctl_port is not None:
+            f.write(scope_template.format(
+                ctl_host=scope_ctl_host,
+                scope_ctl_port=scope_ctl_port,
+                scope_ip=scope_ip))
+
 def ddb():
+    ctl_host = args.ctl_host
+    scope_ctl_host = ctl_host
+
     for system in get_systems_list(include_x=True):
         scope_ip = scope_ip_mapping[system]
         scope_ctl_port = scope_controller_ports[system]
-        scope_ctl_host = args.ctl_host
-
-        with open(os.path.join(experiments_path, f"device_db_{system.lower()}.py"), 'w') as f:
-            f.write(device_db_template.format(
-                core_ip=ip_mapping[system],
-                system=system,
-                ctl_host=args.ctl_host,
-                corelog_ctl_port=corelog_controller_ports[system],
-                moninj_proxy_port=moninj_proxy_ports[system],
-                moninj_ctl_port=moninj_controller_ports[system]
-            ))
-            if scope_ip is not None and scope_ctl_port is not None:
-                f.write(scope_template.format(
-                    ctl_host=scope_ctl_host,
-                    scope_ctl_port=scope_ctl_port,
-                    scope_ip=scope_ip))
+        generate_ddb(
+            os.path.join(experiments_path, f"device_db_{system.lower()}.py"),
+            system, ctl_host, scope_ip, scope_ctl_host, scope_ctl_port)        
 
 # =================================================================================================
 
-def update_master_scripts():
-    os.makedirs(args.output, exist_ok=True)
-    for system in get_systems_list():
-        master_cmd = [
-            # sys.executable,
-            # "-u", "-m", 
-            # "artiq.frontend.artiq_master",
-            "artiq_master",
-            "--device-db", "device_db.py",
-            "--bind", "'*'",
-            "--port-notify", str(master_notify_ports[system]),
-            "--port-control", str(master_control_ports[system]),
-            "--port-logging", str(master_logging_ports[system]),
-            "--port-broadcast", str(master_broadcast_ports[system]),
-            "--name", f"\"System {system}\"",
-        ]
-        ctlmgr_cmd = [
-            # sys.executable,
-            # "-m", 
-            # "artiq_comtools.artiq_ctlmgr",
-            "artiq_ctlmgr",
-            "--server", args.master_ip,
-            "--port-notify", str(master_notify_ports[system]),
-            "--port-logging", str(master_logging_ports[system]),
-            "--port-control", str(ctlmgr_control_ports[system]),
-        ]
-
-        script_path = os.path.join(args.output, f'run_session_{system.lower()}')
-        system_dir_path = os.path.abspath(
-            os.path.join(args.target_dir, f"system_{system.lower()}"))
-
-        with open(script_path, 'w') as f:
-            f.write(f"#!/bin/bash\n\n")
-            f.write(f"cd {system_dir_path}\n\n")
-            f.write(" ".join(master_cmd) + " &\n\n")
-            f.write("sleep 5\n\n")
-            f.write(" ".join(ctlmgr_cmd) + "\n")
-
-        st = os.stat(script_path)
-        os.chmod(script_path, st.st_mode | stat.S_IEXEC)
-
-# =================================================================================================
-
-def start_session():
-    assert args.system in ['A', 'B', 'C', 'D', 'E', 'F'], \
-        "Invalid system, only A-F are allowed, one at a time"
-
+def generate_session_script(target_path, system, master_ip, system_deploy_dir):
     master_cmd = [
-        sys.executable, 
-        "-u", "-m", 
-        "artiq.frontend.artiq_master",
-        "--device-db", f"device_db_{args.system.lower()}.py",
-        "--bind", "*",
-        "--port-notify", str(master_notify_ports[args.system]),
-        "--port-control", str(master_control_ports[args.system]),
-        "--port-logging", str(master_logging_ports[args.system]),
-        "--port-broadcast", str(master_broadcast_ports[args.system]),
-        "--name", f"\"System {args.system}\"",
+        "artiq_master",
+        "--device-db", "device_db.py",
+        "--bind", "'*'",
+        "--port-notify", str(master_notify_ports[system]),
+        "--port-control", str(master_control_ports[system]),
+        "--port-logging", str(master_logging_ports[system]),
+        "--port-broadcast", str(master_broadcast_ports[system]),
+        "--name", f"\"System {system}\"",
     ]
     ctlmgr_cmd = [
-        sys.executable,
-        "-m", 
-        "artiq_comtools.artiq_ctlmgr",
-        "--server", args.master_ip,
-        "--port-notify", str(master_notify_ports[args.system]),
-        "--port-logging", str(master_logging_ports[args.system]),
-        "--port-control", str(ctlmgr_control_ports[args.system]),
+        "artiq_ctlmgr",
+        "--server", master_ip,
+        "--port-notify", str(master_notify_ports[system]),
+        "--port-logging", str(master_logging_ports[system]),
+        "--port-control", str(ctlmgr_control_ports[system]),
     ]
 
-    with subprocess.Popen(master_cmd,
-                          cwd=experiments_path,
-                          stdout=subprocess.PIPE, universal_newlines=True,
-                          bufsize=1) as master:
-        master_ready = False
-        for line in iter(master.stdout.readline, ""):
-            sys.stdout.write(line)
-            if line.rstrip() == "ARTIQ master is now ready.":
-                master_ready = True
-                break
-        if master_ready:
-            with subprocess.Popen(ctlmgr_cmd):
-                for line in iter(master.stdout.readline, ""):
-                    sys.stdout.write(line)
-        else:
-            print("Master failed to start, exiting.")
+    with open(target_path, 'w') as f:
+        f.write(f"#!/bin/bash\n\n")
+        f.write(f"cd {system_deploy_dir}\n\n")
+        f.write(" ".join(master_cmd) + " &\n\n")
+        f.write("sleep 5\n\n")
+        f.write(" ".join(ctlmgr_cmd) + "\n")
+
+    st = os.stat(target_path)
+    os.chmod(target_path, st.st_mode | stat.S_IEXEC)
+
+def update_master_scripts():
+    master_ip = args.master_ip
+    os.makedirs(args.output, exist_ok=True)
+    for system in get_systems_list():
+        script_path = os.path.join(args.output, f'run_session_{system.lower()}')
+        system_dir_path = \
+            os.path.abspath(os.path.join(args.target_dir, f"system_{system.lower()}"))
+        generate_session_script(script_path, system, master_ip, system_dir_path)
 
 # =================================================================================================
 
@@ -318,80 +272,99 @@ def dashboard():
 
 # =================================================================================================
 
+def make_user_dir(systems_dir, system, user_i, overwrite):
+    system_dir = os.path.join(systems_dir, f"system_{system.lower()}")
+    user_dir = os.path.join(system_dir, "repository", f"user_{user_i}")
+    if not os.path.exists(user_dir):
+        os.makedirs(user_dir)
+    elif overwrite:
+        shutil.rmtree(user_dir)
+        os.makedirs(user_dir)
+    else:
+        print(f"Skipping creation of directory for system {system}, user {user_i}")
+        return
+    
+    # Copy experiments
+    for experiment_path in glob.glob(os.path.join(experiments_path, 'repository', '*.py')):
+        experiment = os.path.basename(experiment_path)
+        if experiment == "user.py":
+            continue
+        elif experiment == "common.py":
+            target_path = os.path.join(user_dir, "common.py")
+        else:
+            target_path = os.path.join(user_dir, f"user{user_i}_{experiment}")
+        shutil.copy(
+            experiment_path, 
+            target_path)
+        os.chmod(target_path, 0o664)
+    
+    # Generate user.py file
+    user_file_path = os.path.join(user_dir, "user.py")
+    with open(user_file_path, 'w') as user_file:
+        user_file.write("# This file defines your user ID. DO NOT EDIT!\n")
+        user_file.write(f"user_id = {user_i}\n")
+    os.chmod(user_file_path, 0o664)
+
+
+def make_system_dir(systems_dir, system, users, ctl_host, overwirte):
+    system_dir = os.path.join(systems_dir, f"system_{system.lower()}")
+    if not os.path.exists(system_dir):
+        os.makedirs(system_dir)
+    elif overwirte:
+        shutil.rmtree(system_dir)
+        os.makedirs(system_dir)
+    else:
+        raise RuntimeError(
+            f"System {system} directory already exists, use --overwrite-system to recreate")
+
+    target_ddb_path = os.path.join(system_dir, "device_db.py")
+    generate_ddb(target_path=target_ddb_path,
+                 system=system,
+                 ctl_host=ctl_host,
+                 scope_ip=scope_ip_mapping[system], 
+                 scope_ctl_host=ctl_host, 
+                 scope_ctl_port=scope_controller_ports[system])
+    os.chmod(target_ddb_path, 0o644)
+
+    # At this point user directories never exist
+    for user_i in range(users):
+        make_user_dir(systems_dir, system, user_i, False)
+
+
 def deploy():
-    target_dir = args.target_dir
-    users = args.users
     system = args.system
+    deploy_dir = args.deploy_dir
+    master_ip = args.master_ip
+    ctl_host = getattr(args, 'ctl_host', master_ip)
+    users = args.users
     user = args.user
     overwrite_system = args.overwrite_system
     overwirte_user = args.overwrite_user
     
-    user = args.user
-    
-    def make_user_dir(system, user_i, overwrite):
-        system_dir = os.path.join(target_dir, f"system_{system.lower()}")
-        user_dir = os.path.join(system_dir, "repository", f"user_{user_i}")
-        if not os.path.exists(user_dir):
-            os.makedirs(user_dir)
-        elif overwrite:
-            shutil.rmtree(user_dir)
-            os.makedirs(user_dir)
-        else:
-            print(f"Skipping creation of directory for system {system}, user {user_i}")
-            return
-        
-        # Copy experiments
-        for experiment_path in glob.glob(os.path.join(experiments_path, 'repository', '*.py')):
-            experiment = os.path.basename(experiment_path)
-            if experiment == "user.py":
-                continue
-            elif experiment == "common.py":
-                target_path = os.path.join(user_dir, "common.py")
-            else:
-                target_path = os.path.join(user_dir, f"user{user_i}_{experiment}")
-            shutil.copy(
-                experiment_path, 
-                target_path)
-            os.chmod(target_path, 0o664)
-        
-        # Generate user.py file
-        user_file_path = os.path.join(user_dir, "user.py")
-        with open(user_file_path, 'w') as user_file:
-            user_file.write("# This file defines your user ID. DO NOT EDIT!\n")
-            user_file.write(f"user_id = {user_i}\n")
-        os.chmod(user_file_path, 0o664)
-
-    def make_system_dir(system, overwirte):
-        system_dir = os.path.join(target_dir, f"system_{system.lower()}")
-        if not os.path.exists(system_dir):
-            os.makedirs(system_dir)
-        elif overwirte:
-            shutil.rmtree(system_dir)
-            os.makedirs(system_dir)
-        else:
-            raise RuntimeError(
-                f"System {system} directory already exists, use --overwrite-system to recreate")
-    
-        target_ddb_path = os.path.join(system_dir, "device_db.py")
-        shutil.copy(
-            os.path.join(experiments_path, f"device_db_{system.lower()}.py"), 
-            target_ddb_path)
-        os.chmod(target_ddb_path, 0o644)
-
-        # At this point user directories never exist
-        for user_i in range(users):
-            make_user_dir(system, user_i, False)
-
     # Make sure target dir exists
-    os.makedirs(target_dir, exist_ok=True)
+    os.makedirs(deploy_dir, exist_ok=True)
+
+    # Make sure systems dir exists
+    systems_dir = os.path.join(deploy_dir, "systems")
+    os.makedirs(systems_dir, exist_ok=True)
 
     # Mode for resetting user directory
     if user is not None:
-        make_user_dir(system, user, overwirte_user)
+        make_user_dir(systems_dir, system, user, overwirte_user)
     # Mode for creating system directories
     else:
         for system in get_systems_list():
-            make_system_dir(system, overwrite_system)
+            make_system_dir(systems_dir, system, users, ctl_host, overwrite_system)
+
+    # Make sure scripts dir exists
+    scripts_dir = os.path.join(deploy_dir, "scripts")
+    os.makedirs(scripts_dir, exist_ok=True)
+
+    # Generate scripts
+    for system in get_systems_list():
+        script_path = os.path.join(scripts_dir, f'run_session_{system.lower()}')
+        system_dir_path = os.path.abspath(os.path.join(systems_dir, f"system_{system.lower()}"))
+        generate_session_script(script_path, system, master_ip, system_dir_path)
 
 # =================================================================================================
 
@@ -439,15 +412,10 @@ def main():
         ddb()
     elif args.command == "update-scripts":
         update_master_scripts()
-    elif args.command == "session":
-        # start_session()
-        print("Session command was disabled due to faulty implementation")
-        exit(1)
     elif args.command == "dashboard":
         dashboard()
     elif args.command == "deploy":
         deploy()
-        print("\nRemeber to update session scripts by running update-scripts command.\n")
     elif args.command == "generate-dashboard-config":
         generate_dashboard_config()
     else:
