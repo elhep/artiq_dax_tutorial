@@ -6,3 +6,4 @@
 experiments/**.png
 experiments/results/**
 deploy/**
+experiments/device_db_*.py

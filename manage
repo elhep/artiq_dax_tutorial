@@ -106,6 +106,8 @@ deploy_parser.add_argument('--user', type=str,
                            help="Recreate directory for given user, to be used with --system")
 deploy_parser.add_argument('--overwrite-user', action='store_true', 
                            help="Overwrite files in the target directory for system/user pair")
+deploy_parser.add_argument('--owner', type=str, default="1000:1002",
+                           help="uid:gid to set for the deploy directory")
 
 # =================================================================================================
 
@@ -340,8 +342,11 @@ def deploy():
     user = args.user
     overwrite_system = args.overwrite_system
     overwirte_user = args.overwrite_user
+    uid, gid = args.owner.split(':')
     
     # Make sure target dir exists
+    if os.path.exists(deploy_dir) and overwrite_system:
+        shutil.rmtree(deploy_dir)
     os.makedirs(deploy_dir, exist_ok=True)
 
     # Make sure systems dir exists
@@ -365,6 +370,14 @@ def deploy():
         script_path = os.path.join(scripts_dir, f'run_session_{system.lower()}')
         system_dir_path = os.path.abspath(os.path.join(systems_dir, f"system_{system.lower()}"))
         generate_session_script(script_path, system, master_ip, system_dir_path)
+
+    # Change owner and group of systems_dir to 1000:1002
+    shutil.chown(systems_dir, user=int(uid), group=int(gid))
+    for root, dirs, files in os.walk(systems_dir):
+        for dir in dirs:
+            shutil.chown(os.path.join(root, dir), user=int(uid), group=int(gid))
+        for file in files:
+            shutil.chown(os.path.join(root, file), user=int(uid), group=int(gid))
 
 # =================================================================================================
 
