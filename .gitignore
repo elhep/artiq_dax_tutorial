@@ -1,6 +1,7 @@
 .direnv/**
 **.pyc
 **.pyon
+!dashboard_config.pyon
 **.h5
 experiments/**.png
 experiments/results/**

@@ -8,6 +8,7 @@ import tempfile
 import stat
 import shutil
 import glob
+from sipyco import pyon
 from setups import *
 from templates import device_db_template, scope_template
 
@@ -109,6 +110,21 @@ deploy_parser.add_argument('--user', type=str,
                            help="Recreate directory for given user, to be used with --system")
 deploy_parser.add_argument('--overwrite-user', action='store_true', 
                            help="Overwrite files in the target directory for system/user pair")
+
+# =================================================================================================
+
+generate_dashboard_config = subparsers.add_parser('generate-dashboard-config')
+generate_dashboard_config.add_argument('--applet-path', type=str, required=True,
+                                       help="File path to show_image.py applet with respect to "
+                                            "the dashboard host filesystem")
+generate_dashboard_config.add_argument('--system', '-s', type=str, required=True,
+                                       help="Create files for given system (A..F or all)")
+generate_dashboard_config.add_argument('--users', default=1, type=int, 
+                                       help="Number of users per setup")
+generate_dashboard_config.add_argument('--output-dir', default="./dashboard_configs", 
+                                       help="Output directory to generate configs")
+generate_dashboard_config.add_argument('--master-ip', type=str, default="::1", required=False, 
+                                   help="Master IP address")
 
 # =================================================================================================
 
@@ -375,6 +391,37 @@ def deploy():
             make_system_dir(system, overwrite_system)
 
 # =================================================================================================
+
+def generate_dashboard_config():
+    applet_path = args.applet_path
+    users = args.users
+    master_ip = args.master_ip
+
+    os.makedirs(args.output_dir, exist_ok=True)
+
+    for system in get_systems_list():
+        applets = []
+        config = pyon.load_file(
+            os.path.join(os.path.dirname(__file__), "dashboard_config.pyon"))
+        applet_template = config['AppletsCCBDock']['applets'][0]
+        for user_id in range(users):
+            applets.append((
+                'applet',
+                user_id,
+                False,
+                f'User {user_id} Scope View',
+                {
+                    'command': f'python {applet_path} scope_{user_id}',
+                    'ty': 'command'
+                },
+                applet_template[5]
+            ))
+        config['AppletsCCBDock']['applets'] = applets
+        output_path = os.path.join(
+            args.output_dir, f"dashboard_{master_ip}_{master_notify_ports[system]}.pyon")
+        pyon.store_file(output_path, config)
+
+# =================================================================================================
 # Entrypoint function
 # =================================================================================================
 
@@ -398,6 +445,8 @@ def main():
     elif args.command == "deploy":
         deploy()
         print("\nRemeber to update session scripts by running update-scripts command.\n")
+    elif args.command == "generate-dashboard-config":
+        generate_dashboard_config()
     else:
         print("Invalid command")
         exit(1)
