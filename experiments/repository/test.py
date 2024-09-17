@@ -1,5 +1,7 @@
 from artiq.experiment import *
 from time import sleep
+from common import Scope
+from user import user_id
 
 
 class Test(EnvExperiment):
@@ -17,64 +19,7 @@ class Test(EnvExperiment):
         ]
         self.setattr_device("phaser0")
 
-        self.setattr_device("scope")
-
-    def setup_scope(self):
-        # Oscilloscope channels are counted from 1 to 4
-        self.scope.reset()
-
-        self.scope.set_current_datetime()
-
-        self.scope.set_channel(
-            channel=1,
-            vertical_scale=2.5,
-            vertical_position=3,
-            termination_fifty_ohms=False,
-            label="DIO SMA 0",
-            ac_coupling=False
-        )
-
-        self.scope.set_channel(
-            channel=2,
-            vertical_scale=1,
-            vertical_position=1.0,
-            termination_fifty_ohms=True,
-            label="Urukul 0",
-            ac_coupling=True
-        )
-
-        self.scope.set_channel(
-            channel=3,
-            vertical_scale=1,
-            vertical_position=-1.0,
-            termination_fifty_ohms=True,
-            label="Urukul 1",
-            ac_coupling=True
-        )
-
-        self.scope.set_channel(
-            channel=4,
-            vertical_scale=0.5,
-            vertical_position=-3.0,
-            termination_fifty_ohms=True,
-            label="Phaser RF 0",
-            ac_coupling=True
-        )
-
-        # Waveform time will be 10*horizontal scale
-        self.scope.set_horizontal_scale(100*ns)
-        self.scope.set_horizontal_position(400*ns)
-
-        # Slope: RISE/FALL
-        # Mode: NORMAL/AUTO
-        self.scope.set_trigger(
-            channel=1,
-            level=2.5,
-            slope="RISE",
-            mode="NORMAL"
-        )
-        self.scope.start_acquisition()
-        sleep(3)
+        self.scope = Scope(self, user_id)   
 
     @kernel
     def init(self):
@@ -138,12 +83,11 @@ class Test(EnvExperiment):
         # CH2: sine wave at 20MHz
         # CH3: ?
 
-        self.setup_scope()
+        self.scope.setup()
         # sleep(5)
         self.run_rt()
 
-        with open(f"test.png", "wb") as f:
-            f.write(self.scope.get_screen_png())
+        self.scope.store_waveform()
 
 
         
