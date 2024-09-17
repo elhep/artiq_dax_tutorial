@@ -54,7 +54,7 @@
             # From the artiq flake
             artiq-full.artiq
             artiq-full.misoc
-            ps.imageio
+            ps.pillow
             # I need to build dax from source because artiq-extrapkg is pointing to dax release 6.7
             dax_pkg.dax
             dax-applets_pkg.dax-applets
