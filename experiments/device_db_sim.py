@@ -15,13 +15,6 @@ device_db = {
         "port": 2000,
         "command": "aqctl_corelog -p {port} --bind {bind} " + core_addr
     },
-    "core_moninj": {
-        "type": "controller",
-        "host": "::1",
-        "port_proxy": 1583,
-        "port": 1483,
-        "command": "aqctl_moninj_proxy --port-proxy {port_proxy} --port-control {port} --bind {bind} " + core_addr
-    },
     "core_cache": {
         "type": "local",
         "module": "artiq.coredevice.cache",
