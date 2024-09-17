@@ -394,7 +394,7 @@ def generate_dashboard_config():
             ))
         config['AppletsCCBDock']['applets'] = applets
         output_path = os.path.join(
-            args.output_dir, f"dashboard_{master_ip}_{master_notify_ports[system]}.pyon")
+            args.output_dir, f"artiq_dashboard_{master_ip}_{master_notify_ports[system]}.pyon")
         pyon.store_file(output_path, config)
 
 # =================================================================================================
