@@ -1,6 +1,5 @@
 from time import sleep
 import numpy as np
-import imageio.v3 as imageio
 from artiq.experiment import *
 from PIL import Image
 
