@@ -1,6 +1,6 @@
 from artiq.experiment import *
 
-class TimingExcercise(EnvExperiment):
+class ParallelExcercise(EnvExperiment):
     def build(self):
         self.setattr_device("core")
         self.ttl = self.get_device("ttl0")
@@ -13,7 +13,8 @@ class TimingExcercise(EnvExperiment):
                 type = "int",
                 step = 1,
                 min = 1,
-                max = 10
+                max = 10,
+                scale=1
             )
         )
         self.setattr_argument(
@@ -24,7 +25,8 @@ class TimingExcercise(EnvExperiment):
                 type = "int",
                 step = 1,
                 min = 1,
-                max = 10
+                max = 10,
+                scale=1
             )
         )
         self.setattr_argument(
@@ -35,11 +37,12 @@ class TimingExcercise(EnvExperiment):
                 type = "int",
                 step = 1,
                 min = 1,
-                max = 10
+                max = 10,
+                scale=1
             )
         )
         self.urukul = self.get_device("urukul0_cpld")
-        self.urukul_channels = [self.get_device(f"urukul0_ch{i}") fo  i in range(2)]
+        self.urukul_channels = [self.get_device(f"urukul0_ch{i}") for  i in range(2)]
 
 
 

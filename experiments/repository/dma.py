@@ -1,6 +1,6 @@
 from artiq.experiment import *
 
-class TimingExcercise(EnvExperiment):
+class DMAExcercise(EnvExperiment):
     def build(self):
         self.setattr_device("core")
         self.setattr_device("core_dma")
@@ -13,7 +13,8 @@ class TimingExcercise(EnvExperiment):
                 type = "int",
                 step = 1,
                 min = 10,
-                max = 10000
+                max = 10000,
+                scale=1
             )
         )
 
@@ -38,7 +39,7 @@ class TimingExcercise(EnvExperiment):
         # Set SYSTEM time pointer in future
         self.core.break_realtime()
 
-        while True:
+        for i in range(50):
             # execute RTIO operations in the DMA buffer
             # each playback advances the timeline by 50*(X+X) ns
             self.core_dma.playback_handle(pulses_handle)

@@ -1,6 +1,6 @@
 from artiq.experiment import *
 
-class TimingExcercise(EnvExperiment):
+class Timing2Excercise(EnvExperiment):
     def build(self):
         self.setattr_device("core")
         self.ttl = self.get_device("ttl0")
@@ -13,7 +13,8 @@ class TimingExcercise(EnvExperiment):
                 type = "int",
                 step = 1,
                 min = 10,
-                max = 10000
+                max = 10000,
+                scale=1
             )
         )
 

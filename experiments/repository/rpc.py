@@ -3,7 +3,7 @@ from artiq.experiment import *
 def input_ttl_state() -> TBool:
     return input("Enter desired TTL state: ") == "1"
 
-class TimingExcercise(EnvExperiment):
+class RPCExcercise(EnvExperiment):
     def build(self):
         self.setattr_device("core")
         self.ttl = self.get_device("ttl0")
