@@ -2,6 +2,7 @@ from time import sleep
 import numpy as np
 from artiq.experiment import *
 from PIL import Image
+import io
 
 
 class Scope:
@@ -69,7 +70,7 @@ class Scope:
         sleep(3)
 
     def store_waveform(self):
-        im = Image.open(self.scope.get_screen_png())
+        im = Image.open(io.BytesIO(self.scope.get_screen_png()))
         im = np.array(im)
         im = np.rot90(im, 1, (0, 1))
         im = np.flip(im, 1)
