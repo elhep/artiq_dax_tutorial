@@ -24,6 +24,7 @@ class DemoSystem(DaxSystem):
 
     # system datasets
     MON_PMT_ENABLED_KEY: str = "monitoring_pmt_enabled"
+    DAX_INFLUX_DB_KEY: str = None
 
     def build(self) -> None:
         # Call super, obtains core devices
