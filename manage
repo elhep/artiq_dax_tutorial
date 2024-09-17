@@ -220,7 +220,7 @@ def update_master_scripts():
             # "-u", "-m", 
             # "artiq.frontend.artiq_master",
             "artiq_master",
-            "--device-db", f"device_db_{system.lower()}.py",
+            "--device-db", "device_db.py",
             "--bind", "'*'",
             "--port-notify", str(master_notify_ports[system]),
             "--port-control", str(master_control_ports[system]),
@@ -345,7 +345,10 @@ def deploy():
             experiment = os.path.basename(experiment_path)
             if experiment == "user.py":
                 continue
-            target_path = os.path.join(user_dir, f"user{user_i}_{experiment}")
+            elif experiment == "common.py":
+                target_path = os.path.join(user_dir, "common.py")
+            else:
+                target_path = os.path.join(user_dir, f"user{user_i}_{experiment}")
             shutil.copy(
                 experiment_path, 
                 target_path)
