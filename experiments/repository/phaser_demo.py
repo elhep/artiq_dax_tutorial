@@ -50,7 +50,7 @@ class ParallelExcercise(EnvExperiment):
             ch.set_att(0.0)
             ch.set(frequency=25*MHz)
             
-        osc = [(i+1) * 10 MHz for i in range(5)]
+        osc = [(i+1) * 10 * MHz for i in range(5)]
         phaser.channel[0].set_duc_frequency(duc)
         phaser.channel[0].set_duc_cfg()
         phaser.channel[0].set_att(6 * dB)
