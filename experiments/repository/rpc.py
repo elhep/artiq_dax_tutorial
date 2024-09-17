@@ -1,5 +1,8 @@
 from artiq.experiment import *
 
+def input_ttl_state() -> TBool:
+    return input("Enter desired TTL state: ") == "1"
+
 class TimingExcercise(EnvExperiment):
     def build(self):
         self.setattr_device("core")
@@ -7,18 +10,10 @@ class TimingExcercise(EnvExperiment):
 
     @kernel
     def run(self):
-        # Reset our system after previous experminet
+        # Reset our system after previous experiment
         self.core.reset()
 
+        s = input_ttl_state()
 
         self.core.break_realtime()
-
-        # t will be our LOCAL time pointer
-        t = now_mu()
-
-
-        self.ttl.set_o(True)
-        delay(self.DelayValue * us)
-        self.ttl.set_o(False)
-
-        #
+        self.ttl.set_o(s)
