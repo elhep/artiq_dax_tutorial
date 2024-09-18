@@ -2,7 +2,7 @@ from artiq.experiment import *
 from user import user_id
 from common import Scope
 
-class ParallelExcercise(EnvExperiment):
+class PhaserDemoExcercise(EnvExperiment):
     def build(self):
         self.setattr_device("core")
         self.setattr_device("core_dma")
@@ -21,15 +21,15 @@ class ParallelExcercise(EnvExperiment):
 
     @kernel
     def init(self):
-        self.core.reset()
         self.urukul0_cpld.init()
         for urukul_ch in self.urukul_channels:
             urukul_ch.init()
             urukul_ch.sw.off()
             urukul_ch.set_att(31.5)
         self.core.break_realtime()
-        phaser.init()
+        self.phaser0.init()
         delay(1 * ms)
+        self.ttl0.set_o(False)
 
 
 
@@ -43,21 +43,27 @@ class ParallelExcercise(EnvExperiment):
         self.core.break_realtime()
         self.init()
 
-        self.urukul.init()
-        for ch in self.urukul_channels:
-            ch.init()
-            ch.sw.off()
-            ch.set_att(0.0)
-            ch.set(frequency=25*MHz)
+
+        # for ch in self.urukul_channels:
+        #     ch.init()
+        #     ch.sw.off()
+        #     ch.set_att(0.0)
+        #     ch.set(frequency=25*MHz)
             
-        osc = [(i+1) * 10 * MHz for i in range(5)]
+        duc = (1) * 10 * MHz
+        osc = [10 * MHz, 20 * MHz, 30 * MHz, 40 * MHz, 50 * MHz]
+        # osc = [(i+1) * 10 * MHz for i in range(5)]
+        phaser = self.phaser0
+        delay(1 * ms)
         phaser.channel[0].set_duc_frequency(duc)
         phaser.channel[0].set_duc_cfg()
-        phaser.channel[0].set_att(6 * dB)
+        phaser.channel[0].set_att(0 * dB)
         phaser.duc_stb()
         delay(1 * ms)
         for i in range(len(osc)):
             phaser.channel[0].oscillator[i].set_frequency(osc[i])
             phaser.channel[0].oscillator[i].set_amplitude_phase(.2)
-            
+            delay(1 * ms)
+        delay(100 * ns)
+        self.ttl0.set_o(True)
         self.scope.store_waveform()

@@ -17,7 +17,7 @@ class ParallelExcercise(EnvExperiment):
         self.scope.setup()
         # Reset our system after previous experiment
         self.core.reset()
-
+    
         # Set SYSTEM time pointer in future
         self.core.break_realtime()
 
@@ -31,14 +31,15 @@ class ParallelExcercise(EnvExperiment):
         delay(10 * ms)
         with parallel:
             self.ttl.on()
+            self.urukul_channels[0].sw.on()
+            self.urukul_channels[1].sw.on()
             with sequential:
-                self.urukul_channels[1].sw.on()
                 delay(200 * ns)
-                self.urukul_channels[0].sw.on()
                 self.urukul_channels[1].sw.off()
                 # delay(200 * ns)
-
-                delay(200 * ns)
+                # delay(200 * ns)
                 self.urukul_channels[0].sw.off()
             
+        delay(100 * us)
+        self.ttl.off()
         self.scope.store_waveform()
