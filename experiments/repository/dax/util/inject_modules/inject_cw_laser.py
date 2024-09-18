@@ -2,14 +2,12 @@ from artiq.experiment import *
 
 from demo_system.system import DemoSystem
 
-
 class InjectCWLaser(DemoSystem, EnvExperiment):
     """Inject CW"""
 
     def build(self):
         # Get Devices
         super(InjectCWLaser, self).build()
-
         # CW Set
         self.update_defaults = self.get_argument(
             "Update Config",
@@ -77,12 +75,12 @@ class InjectCWLaser(DemoSystem, EnvExperiment):
             "l370_mode",
             "l370_set",
             "ionize_set",
-            "repump_set",
             "idle",
             "pre_delay",
             "post_delay",
         )
 
+        
     def prepare(self):
         self.l370_mode = self.l370.MODES.modes_list_str.index(self.l370_mode)
         pass
@@ -92,11 +90,14 @@ class InjectCWLaser(DemoSystem, EnvExperiment):
         self.dax_init()
 
         self.run_kernel()
+        self.post_run()
 
     @kernel
     def run_kernel(self):
         # Reset the core
         self.core.reset()
+
+        self.trigger_ttl.pulse(10 * ns)
 
         # Pre-delay
         delay(self.pre_delay)
@@ -105,6 +106,7 @@ class InjectCWLaser(DemoSystem, EnvExperiment):
 
         # Post-wait time
         delay(self.post_delay)
+        self.scope.store_waveform()
         self.core.wait_until_mu(now_mu())
 
     @kernel

@@ -224,7 +224,6 @@ class Laser355(DaxModule):
         }
 
         self._dds_list = list(self._dds_dict.values())
-        self._sw_list = list(self._sw_dict.values())
 
     def init(self, *, force: bool = False) -> None:
         """Initialize this module.
@@ -240,8 +239,6 @@ class Laser355(DaxModule):
 
     @kernel
     def init_kernel(self):
-        for sw in self._sw_list:
-            sw.init_kernel()
         for dds in self._dds_list:
             dds.init_kernel()
 
@@ -253,8 +250,6 @@ class Laser355(DaxModule):
     @kernel
     def safety_off(self):
         """Turn off all sw/dds safely"""
-        for sw in self._sw_list:
-            sw.safety_off()
         for dds in self._dds_list:
             dds.safety_off()
 

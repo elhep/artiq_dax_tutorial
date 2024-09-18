@@ -11,11 +11,13 @@ from demo_system.util.functions import (
     rabi_oscillation_on_resonance,
 )
 
+from user import user_id
 
 class MicrowaveQubitTimeGateScan(GateScan, Experiment):
     """Microwave qubit time"""
 
     MW_GATE_TIME_KEY = "mw_gate_time"
+    user_id = str(user_id)
 
     def build_gate_scan(self):
         # Add scans
@@ -57,10 +59,12 @@ class MicrowaveQubitTimeGateScan(GateScan, Experiment):
 
     @kernel
     def gate_action(self, point, index):
+        self.trigger_ttl.pulse()
         self.microwave.pulse(point.mw_gate_time)
 
     def host_exit(self) -> None:
         """Calibrate microwave Rabi frequency."""
+        self.scope.store_waveform()
 
         # Obtain x data
         scannables = self.get_scannables()

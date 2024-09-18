@@ -7,6 +7,7 @@ from demo_system.system import *
 from demo_system.templates.gate_scan import GateScan
 from demo_system.util.functions import gaussian
 
+from user import user_id
 
 class MicrowaveQubitFreqGateScan(GateScan, Experiment):
     """Microwave qubit frequency"""
@@ -14,6 +15,7 @@ class MicrowaveQubitFreqGateScan(GateScan, Experiment):
     MW_GATE_FREQ_KEY = "mw_gate_freq"
 
     DEFAULT_SPAN = 0.02 * MHz
+    user_id = str(user_id)
 
     def build_gate_scan(self):
         # Add scans
@@ -66,11 +68,12 @@ class MicrowaveQubitFreqGateScan(GateScan, Experiment):
 
     @kernel
     def gate_action(self, point, index):
+        self.trigger_ttl.pulse()
         self.microwave.pulse(self.mw_gate_duration)
 
     def host_exit(self) -> None:
         """Calibrate microwave qubit frequency."""
-
+        self.scope.store_waveform()
         # Obtain x data
         scannables = self.get_scannables()
         freq = np.asarray(scannables[self.MW_GATE_FREQ_KEY])
