@@ -316,6 +316,8 @@ def make_user_dir(systems_dir, system, user_i, overwrite):
         user_file.write(f"user_id = {user_i}\n")
     shutil.copy(user_file_path, 
                 os.path.join(user_dir, "dax", "user.py"))
+    shutil.copy(user_file_path, 
+                os.path.join(user_dir, "reference", "user.py"))
     os.chmod(user_file_path, 0o664)
 
 
