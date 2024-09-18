@@ -291,18 +291,23 @@ def make_user_dir(systems_dir, system, user_i, overwrite):
         return
     
     # Copy experiments
-    for experiment_path in glob.glob(os.path.join(experiments_path, 'repository', '*.py')):
-        experiment = os.path.basename(experiment_path)
-        if experiment == "user.py":
+    prefix_ignore = ['common.py', '__init__.py']
+    ignore = ['user.py']
+    for root, _, files in os.walk(os.path.join(experiments_path, 'repository')):
+        if root.split('/')[-1] == '__pycache__':
             continue
-        elif experiment == "common.py":
-            target_path = os.path.join(user_dir, "common.py")
-        else:
-            target_path = os.path.join(user_dir, f"user{user_i}_{experiment}")
-        shutil.copy(
-            experiment_path, 
-            target_path)
-        os.chmod(target_path, 0o664)
+        for file in files:
+            relative_path = os.path.relpath(root, os.path.join(experiments_path, 'repository'))
+            target_dir = os.path.join(user_dir, relative_path)
+            os.makedirs(target_dir, exist_ok=True)
+            if file in ignore:
+                continue
+            elif file in prefix_ignore:
+                target_path = os.path.join(target_dir, file)
+            else:
+                target_path = os.path.join(target_dir, f"user{user_i}_{file}")
+            shutil.copy(os.path.join(root, file), target_path)
+            os.chmod(target_path, 0o664)
     
     # Generate user.py file
     user_file_path = os.path.join(user_dir, "user.py")
