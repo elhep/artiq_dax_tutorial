@@ -251,15 +251,16 @@ class IonLoadService(DaxService):
 
             with self._ablation:
                 self._ablation.on()
-                current_num_ions = self._load_ions_loop(
-                    num_ions=num_ions,
-                    buffer_size=buffer_size,
-                    detection_window=detection_window,
-                    detection_delay_mu=detection_delay_mu,
-                    ion_absence_threshold=ion_absence_threshold,
-                    t_stop=t_stop,
-                    current_num_ions=current_num_ions,
-                )
+                current_num_ions = num_ions
+                # self._load_ions_loop(
+                #     num_ions=num_ions,
+                #     buffer_size=buffer_size,
+                #     detection_window=detection_window,
+                #     detection_delay_mu=detection_delay_mu,
+                #     ion_absence_threshold=ion_absence_threshold,
+                #     t_stop=t_stop,
+                #     current_num_ions=current_num_ions,
+                # )
                 self._ablation.off()
 
             # Store actual stop timestamp
