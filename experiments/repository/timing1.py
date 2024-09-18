@@ -68,10 +68,10 @@ class Timing1Excercise(EnvExperiment):
         at_mu(t + # start with local pointer
               self.core.seconds_to_mu(self.FirstPulseWidth * ns) + # add FirstPulseWidth to "catch" system pointer
               self.core.seconds_to_mu(self.DelayToNextPulse * ns))  # add Delay value
-        # You can try passing a negative value to DelayToNextPulse and see what happens when system tries to control IO in the past.
 
         self.ttl.pulse(self.SecondPulseWidth * ns)
+        # Pulse method consists delay() function inside. SYSTEM pointer is now at falling edge of the second pulse.
+
 
         self.scope.store_waveform()
 
-        # Pulse method consists delay() function inside. SYSTEM pointer is now at falling edge of the pulse.
