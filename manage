@@ -65,6 +65,8 @@ device_db_parser = subparsers.add_parser('ddb')
 device_db_parser.add_argument('--system', '-s', type=str, required=True, 
                               help="which system to restart (A .. F or X or 'all' for all)")
 device_db_parser.add_argument('--ctl-host', type=str, default="::1", required=False, 
+                              help="Controllers host")
+device_db_parser.add_argument('--scope-ctl-host', type=str, required=False, 
                               help="Oscilloscope controller host")
 
 # =================================================================================================
@@ -98,8 +100,10 @@ deploy_parser.add_argument('--users', default=12, type=int,
                            help="Number of users per setup (defaults to 12)")
 deploy_parser.add_argument('--master-ip', type=str, default="::1", required=False, 
                            help="Master IP address (defaults to ::1)")
-deploy_parser.add_argument('--ctl-host', type=str,
+deploy_parser.add_argument('--ctl-host', type=str, default=None,
                               help="Oscilloscope controller host (defaults to master-ip)")
+deploy_parser.add_argument('--scope-ctl-host', type=str, required=False, 
+                              help="Oscilloscope controller host (defaults to ctl-host)")
 deploy_parser.add_argument('--overwrite-system', action='store_true', 
                            help="Overwrite files in the target directory for given system(s)")
 deploy_parser.add_argument('--user', type=str, 
@@ -199,13 +203,15 @@ def generate_ddb(target_path, system, ctl_host, scope_ip, scope_ctl_host, scope_
         ))
         if scope_ip is not None and scope_ctl_port is not None:
             f.write(scope_template.format(
-                ctl_host=scope_ctl_host,
+                scope_ctl_host=scope_ctl_host,
                 scope_ctl_port=scope_ctl_port,
                 scope_ip=scope_ip))
 
 def ddb():
     ctl_host = args.ctl_host
-    scope_ctl_host = ctl_host
+    scope_ctl_host = args.scope_ctl_host
+    if scope_ctl_host is None:
+        scope_ctl_host = ctl_host
 
     for system in get_systems_list(include_x=True):
         scope_ip = scope_ip_mapping[system]
@@ -261,9 +267,7 @@ def dashboard():
         "Invalid system, only A-F are allowed, one at a time"
 
     dashboard_cmd = [
-        sys.executable,
-        "-m",
-        "artiq.frontend.artiq_dashboard",
+        "artiq_dashboard",
         "--server", args.master_ip,
         "--port-notify", str(master_notify_ports[args.system]),
         "--port-control", str(master_control_ports[args.system]),
@@ -287,28 +291,35 @@ def make_user_dir(systems_dir, system, user_i, overwrite):
         return
     
     # Copy experiments
-    for experiment_path in glob.glob(os.path.join(experiments_path, 'repository', '*.py')):
-        experiment = os.path.basename(experiment_path)
-        if experiment == "user.py":
+    prefix_ignore = ['common.py', '__init__.py']
+    ignore = ['user.py']
+    for root, _, files in os.walk(os.path.join(experiments_path, 'repository')):
+        if root.split('/')[-1] == '__pycache__':
             continue
-        elif experiment == "common.py":
-            target_path = os.path.join(user_dir, "common.py")
-        else:
-            target_path = os.path.join(user_dir, f"user{user_i}_{experiment}")
-        shutil.copy(
-            experiment_path, 
-            target_path)
-        os.chmod(target_path, 0o664)
+        for file in files:
+            relative_path = os.path.relpath(root, os.path.join(experiments_path, 'repository'))
+            target_dir = os.path.join(user_dir, relative_path)
+            os.makedirs(target_dir, exist_ok=True)
+            if file in ignore:
+                continue
+            elif file in prefix_ignore:
+                target_path = os.path.join(target_dir, file)
+            else:
+                target_path = os.path.join(target_dir, f"user{user_i}_{file}")
+            shutil.copy(os.path.join(root, file), target_path)
+            os.chmod(target_path, 0o664)
     
     # Generate user.py file
     user_file_path = os.path.join(user_dir, "user.py")
     with open(user_file_path, 'w') as user_file:
         user_file.write("# This file defines your user ID. DO NOT EDIT!\n")
         user_file.write(f"user_id = {user_i}\n")
+    shutil.copy(user_file_path, 
+                os.path.join(user_dir, "dax", "user.py"))
     os.chmod(user_file_path, 0o664)
 
 
-def make_system_dir(systems_dir, system, users, ctl_host, overwirte):
+def make_system_dir(systems_dir, system, users, ctl_host, scope_ctl_host, overwirte):
     system_dir = os.path.join(systems_dir, f"system_{system.lower()}")
     if not os.path.exists(system_dir):
         os.makedirs(system_dir)
@@ -324,7 +335,7 @@ def make_system_dir(systems_dir, system, users, ctl_host, overwirte):
                  system=system,
                  ctl_host=ctl_host,
                  scope_ip=scope_ip_mapping[system], 
-                 scope_ctl_host=ctl_host, 
+                 scope_ctl_host=scope_ctl_host, 
                  scope_ctl_port=scope_controller_ports[system])
     os.chmod(target_ddb_path, 0o644)
 
@@ -337,7 +348,8 @@ def deploy():
     system = args.system
     deploy_dir = args.deploy_dir
     master_ip = args.master_ip
-    ctl_host = getattr(args, 'ctl_host', master_ip)
+    ctl_host = args.ctl_host if args.ctl_host is not None else master_ip
+    scope_ctl_host = args.scope_ctl_host if args.scope_ctl_host is not None else ctl_host
     users = args.users
     user = args.user
     overwrite_system = args.overwrite_system
@@ -359,7 +371,7 @@ def deploy():
     # Mode for creating system directories
     else:
         for system in get_systems_list():
-            make_system_dir(systems_dir, system, users, ctl_host, overwrite_system)
+            make_system_dir(systems_dir, system, users, ctl_host, scope_ctl_host, overwrite_system)
 
     # Make sure scripts dir exists
     scripts_dir = os.path.join(deploy_dir, "scripts")
