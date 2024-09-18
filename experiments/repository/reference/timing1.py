@@ -48,7 +48,7 @@ class Timing1Excercise(EnvExperiment):
 
     @kernel
     def run(self):
-        ttl = self.ttl
+        # Prepare oscilloscope
         self.scope.setup()
         # Reset our system after previous experiment
         self.core.reset()
@@ -59,20 +59,19 @@ class Timing1Excercise(EnvExperiment):
         # t will be our LOCAL time pointer. For now it points the same point in timeline as SYSTEM pointer
         t = now_mu()
 
-
-        '''
-        TODO
-        Drive two pulses with self.ttl object. Remember about delay between. Time values are defined by arguments:
-        self.FirstPulseWidth
-        self.SecondPulseWidth
-        self.DelayToNextPulse
-
-        How to use it with delay and at_mu? Examples:
-        
+        # Let's drive single pulse. With delay() we change system pointer relative: 
+        # software does not care about the exact point in timeline but we know that next event will take place exactly "FirstPulseWidth" microseconds after ttl.set_o(True) command
+        self.ttl.on()
         delay(self.FirstPulseWidth * ns)
-        at_mu(t + self.core.seconds_to_mu(self.FirstPulseWidth * ns))
-        '''
-        # TODO Your code should be here
+        self.ttl.off()
+
+        # Because of delay() function, SYSTEM pointer is DelayValue further. Let's drive another pulse using at_mu:
+        at_mu(t + # start with local pointer
+              self.core.seconds_to_mu(self.FirstPulseWidth * ns) + # add FirstPulseWidth to "catch" system pointer
+              self.core.seconds_to_mu(self.DelayToNextPulse * ns))  # add Delay value
+
+        self.ttl.pulse(self.SecondPulseWidth * ns)
+        # Pulse method consists delay() function inside. SYSTEM pointer is now at falling edge of the second pulse.
 
 
         self.scope.store_waveform()

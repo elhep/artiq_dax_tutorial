@@ -14,7 +14,6 @@ class ParallelExcercise(EnvExperiment):
 
     @kernel
     def run(self):
-        ttl = self.ttl
         # Prepare oscilloscope
         self.scope.setup()
         # Reset our system after previous experiment
@@ -31,25 +30,17 @@ class ParallelExcercise(EnvExperiment):
             ch.set(frequency=25*MHz)
             
         delay(10 * ms)
-        '''
-        TODO
-        Drive ttl pulse for 200 ns and parallel switch on both urukul channels:
-        Urukul channels objects:
-        self.urukul_channels[0].sw.on()
-        self.urukul_channels[1].sw.on() 
-        self.urukul_channels[0].sw.off()
-        self.urukul_channels[1].sw.off()
-
-        Switch channel 0 after 200 ns. Switch channel 1 after 400 ns (200ns after channel 0)
-        use 'with parallel' block and 'with sequential' block 
-        '''
         with parallel:
+            # TTL and both Urukuls will start at the same time
+            # Do not be suprised when you see Scope View - Analog Switch has latency so we synchronized TTL on with 
+            # Switch Enable signal, not TTL with analog signal
             self.ttl.pulse(200 * ns)
-        #    Your code in parallel block
-        #    with sequential:
-        #         Your code in sequential block (which is still in parallel block)
-        #
-
-        # You can also write code outside parallel block
+            self.urukul_channels[0].sw.on()
+            with sequential:
+                self.urukul_channels[1].sw.on()
+                delay(200 * ns)
+                self.urukul_channels[1].sw.off()
+        delay(200 * ns)
+        self.urukul_channels[0].sw.off()
 
         self.scope.store_waveform()

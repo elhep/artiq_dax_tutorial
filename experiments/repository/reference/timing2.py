@@ -23,7 +23,6 @@ class Timing2Excercise(EnvExperiment):
 
     @kernel
     def run(self):
-        ttl = self.ttl
         # Prepare oscilloscope
         self.scope.setup()
         # Reset our system after previous experiment
@@ -33,13 +32,11 @@ class Timing2Excercise(EnvExperiment):
         self.core.break_realtime()
 
         for i in range(10000):
-            '''
-            TODO
-            Drive single pulse in loop - duration self.Delay * ns.
-            Remember about delay after pulse (before next one). Use same self.Delay * ns value.
-            Play with different values of self.Delay in dashboard and check what happens when value is too low.
-            '''
-            # TODO Your code should be here
+            # Simple code: for self.Delay value < 390 ns system timer counter will catch our program
+            self.ttl.on()
+            delay(self.Delay * ns)
+            self.ttl.off()
+            delay(self.Delay * ns)
 
         self.scope.store_waveform()
 

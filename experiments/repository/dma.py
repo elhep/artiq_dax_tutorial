@@ -27,17 +27,21 @@ class DMAExcercise(EnvExperiment):
     def record(self):
         with self.core_dma.record("pulses"):
             for i in range(100):
-                self.ttl.set_o(True)
-                delay(self.Delay * ns)
-                self.ttl.set_o(False)
-                delay(self.Delay * ns)
+                '''
+                #TODO
+                Use the same sequence of events like in timing2 experiment
+                '''
+                # TODO Your code should be here
 
     @kernel
     def run(self):
+        ttl = self.ttl
+        # Prepare oscilloscope
         self.scope.setup()
         # Reset our system after previous experiment
         self.core.reset()
 
+        # Record event block to play
         self.record()
         pulses_handle = self.core_dma.get_handle("pulses")
 
@@ -45,8 +49,6 @@ class DMAExcercise(EnvExperiment):
         self.core.break_realtime()
 
         for i in range(100):
-            # execute RTIO operations in the DMA buffer
-            # each playback advances the timeline by 50*(X+X) ns
             self.core_dma.playback_handle(pulses_handle)
 
         self.scope.store_waveform()
