@@ -280,7 +280,7 @@ def dashboard():
 
 def make_user_dir(systems_dir, system, user_i, overwrite):
     system_dir = os.path.join(systems_dir, f"system_{system.lower()}")
-    user_dir = os.path.join(system_dir, "repository", f"user_{user_i}")
+    user_dir = os.path.join(system_dir, "repository", f"user_{user_i:02d}")
     if not os.path.exists(user_dir):
         os.makedirs(user_dir)
     elif overwrite:
@@ -305,7 +305,7 @@ def make_user_dir(systems_dir, system, user_i, overwrite):
             elif file in prefix_ignore:
                 target_path = os.path.join(target_dir, file)
             else:
-                target_path = os.path.join(target_dir, f"user{user_i}_{file}")
+                target_path = os.path.join(target_dir, f"user{user_i:02d}_{file}")
             shutil.copy(os.path.join(root, file), target_path)
             os.chmod(target_path, 0o664)
     
