@@ -1,6 +1,6 @@
 {
   inputs = {
-    src-artiq_tektronix_osc = { url = git+https://github.com/elhep/artiq_tektronix_oscilloscope.git?ref=queue-op; flake = false; };
+    src-artiq_tektronix_osc = { url = git+https://github.com/elhep/artiq_tektronix_oscilloscope.git; flake = false; };
     artiq.url = "git+https://github.com/m-labs/artiq.git?ref=release-7&rev=38c72fdab41679c300c235d960e87b9e06bea5b4";
     artiq-comtools.follows = "artiq/artiq-comtools";
     artiq-extrapkg = {

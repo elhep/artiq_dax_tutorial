@@ -2,9 +2,10 @@ from artiq.experiment import *
 from time import sleep
 from common import Scope
 from user import user_id
+import time
 
 
-class Test(EnvExperiment):
+class Test10(EnvExperiment):
     def build(self):
         self.setattr_device("core")
         self.setattr_device("core_dma")
@@ -65,9 +66,9 @@ class Test(EnvExperiment):
         self.urukul0_ch1.sw.on()
 
         # Now setup Phaser
-        duc = (1) * 10 * MHz
-        osc = [1 * MHz]
-        self.set_phaser_frequencies(self.phaser0, duc, osc)
+        # duc = (1) * 10 * MHz
+        # osc = [1 * MHz]
+        # self.set_phaser_frequencies(self.phaser0, duc, osc)
 
         delay(1 * ms)
 
@@ -82,9 +83,40 @@ class Test(EnvExperiment):
         # CH1: sine wave at 10MHz
         # CH2: sine wave at 20MHz
         # CH3: ?
+        
+        total_time = 0
+        num_executions = 10
 
-        self.scope.setup()
-        # sleep(5)
-        self.run_rt()
+        for _ in range(num_executions):
+            start_time = time.time()
+            
+            # Profile scope.setup()
+            setup_start = time.time()
+            self.scope.setup()
+            setup_end = time.time()
+            setup_time = setup_end - setup_start
+            
+            # Profile run_rt()
+            run_rt_start = time.time()
+            self.run_rt()
+            run_rt_end = time.time()
+            run_rt_time = run_rt_end - run_rt_start
+            
+            # Profile scope.store_waveform()
+            store_start = time.time()
+            self.scope.store_waveform()
+            store_end = time.time()
+            store_time = store_end - store_start
+            
+            end_time = time.time()
+            loop_time = end_time - start_time
+            total_time += loop_time
 
-        self.scope.store_waveform()
+            print(f"Execution {_ + 1}:")
+            print(f"  scope.setup() time: {setup_time:.6f} seconds")
+            print(f"  run_rt() time: {run_rt_time:.6f} seconds")
+            print(f"  scope.store_waveform() time: {store_time:.6f} seconds")
+            print(f"  Total loop time: {loop_time:.6f} seconds")
+
+        average_time = total_time / num_executions
+        print(f"Average execution time: {average_time:.6f} seconds")
