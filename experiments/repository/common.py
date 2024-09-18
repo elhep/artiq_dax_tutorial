@@ -13,7 +13,7 @@ class Scope:
         self.user_id = user_id
         self.scope = experiment.get_device(scope)
 
-    def setup(self):
+    def setup(self, reset=False, sleep_time=3.0):
         self.scope.setup(
             channel_configs=[
                 {
@@ -57,9 +57,10 @@ class Scope:
                 "slope": "RISE",
                 "mode": "NORMAL"
             },
-            queue=True
+            queue=True,
+            reset=reset
         )
-        self.scope.run_queue()
+        self.scope.run_queue(sleep_time=sleep_time)
 
     def store_waveform(self):
         im = Image.open(io.BytesIO(self.scope.get_screen_png()))
