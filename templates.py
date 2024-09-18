@@ -262,7 +262,7 @@ scope_template = """
 
 device_db["scope"] = {{
     "type": "controller",
-    "host": "{ctl_host}",
+    "host": "{scope_ctl_host}",
     "port": {scope_ctl_port},
     "scope_ip": "{scope_ip}",
     "command": "aqctl_tektronix_osc -p {{port}} --ip {{scope_ip}} --bind {{bind}}"
