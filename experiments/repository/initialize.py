@@ -8,18 +8,6 @@ from user import user_id
 class Initialize(EnvExperiment):
 
     def build(self):
-        self.setattr_argument(
-            f"Repeat", NumberValue(
-                default = 1,
-                ndecimals = 0,
-                type = "int",
-                step = 1,
-                min = 1,
-                max = 10,
-                scale=1
-            )
-        )
-
         self.setattr_device("core")
         self.setattr_device("core_dma")
 
@@ -67,7 +55,7 @@ class Initialize(EnvExperiment):
 
     def run(self):        
         total_time = 0
-        num_executions = self.Repeat
+        num_executions = 1
 
         for _ in range(num_executions):
             start_time = time.time()
