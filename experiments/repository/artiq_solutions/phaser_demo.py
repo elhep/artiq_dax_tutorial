@@ -20,26 +20,27 @@ class PhaserDemoExcercise(EnvExperiment):
         self.center_f = 97 * MHz
 
         freq_slopes = [
-            list(np.linspace(2.8 * MHz, 1 * MHz, 100)),
-            list(np.linspace(2.9 * MHz, 2 * MHz, 100)),
-            [3 * MHz] * 100,
-            list(np.linspace(3.1 * MHz, 4 * MHz, 100)),
-            list(np.linspace(3.2 * MHz, 5 * MHz, 100)),
+            np.linspace(2.8 * MHz, 1 * MHz, 100),
+            np.linspace(2.9 * MHz, 2 * MHz, 100),
+            np.full(100, 3 * MHz),
+            np.linspace(3.1 * MHz, 4 * MHz, 100),
+            np.linspace(3.2 * MHz, 5 * MHz, 100),
         ]
 
-        self.ftw = [
-            freq_slopes[osc] + list(reversed(freq_slopes[osc]))
-            for osc in range(5)
+        amp_slopes = [
+            np.linspace(0.375, 0.01, 100) * 0.9,
+            np.linspace(0.10, 0.25, 100) * 0.9,
+            np.linspace(0.05, 0.48, 100) * 0.9,
+            np.linspace(0.10, 0.25, 100) * 0.9,
+            np.linspace(0.375, 0.01, 100) * 0.9,
         ]
+
+        # Make sure that summed amps never exceed 1.0 (full scale)
+        assert all(sum(amps) <= 1.0 for amps in zip(*amp_slopes))
+
+        self.ftw = [np.concatenate([slope, slope[::-1]]) for slope in freq_slopes]
+        self.amps = [np.concatenate([slope, slope[::-1]]) for slope in amp_slopes]
         self.length = len(self.ftw[0])
-        
-        # self.ftw = [1 * MHz, 2 * MHz, 3 * MHz, 4 * MHz, 5 * MHz]
-        # self.ftw = [2.8 * MHz, 2.9 * MHz, 3 * MHz, 3.1 * MHz, 3.2 * MHz]
-        self.asf = [0.375, 0.10, 0.05, 0.10, 0.375]
-
-
-
-        assert sum(self.asf) <= 1.0
 
     @kernel
     def init(self):
@@ -70,8 +71,8 @@ class PhaserDemoExcercise(EnvExperiment):
                 for osc in range(5):
                     phaser.channel[0].oscillator[osc].set_frequency(self.ftw[osc][i])
                     phaser.channel[0].oscillator[osc].set_amplitude_phase(
-                        self.asf[osc], phase=0.25)
-                    delay(10 * ms)
+                        self.amps[osc][i], phase=0.25)
+                    delay(5 * ms)
         # for osc in range(5):
         #     phaser.channel[0].oscillator[osc].set_frequency(self.ftw[osc])
         #     phaser.channel[0].oscillator[osc].set_amplitude_phase(
