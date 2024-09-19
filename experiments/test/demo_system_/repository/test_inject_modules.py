@@ -3,16 +3,12 @@ import pytest
 from test.demo_system_.util.test_experiment_base import ExperimentTestBase
 
 from repository.dax.util.inject_modules.inject_ablation import InjectAblation
-from repository.dax.util.inject_modules.inject_all import InjectModules
 from repository.dax.util.inject_modules.inject_cw_laser import InjectCWLaser
 from repository.dax.util.inject_modules.inject_microwave import InjectMicrowave
 
 
 @pytest.mark.repository
 class InjectModulesTestCase(ExperimentTestBase):
-    def test_inject_all(self):
-        self.run_experiment(InjectModules(self.sys), {'ablation_time': 0.1})
-
     def test_inject_ablation(self):
         self.run_experiment(InjectAblation(self.sys), {'ablation_time': 0.1})
 

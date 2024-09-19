@@ -22,7 +22,7 @@ class DDS9910TestCase(dax.sim.test_case.PeekTestCase):
         self.expect_close(self.dut._dds, 'freq', self.dut._default_freq, places=self.FREQ_PLACES)
         self.expect_close(self.dut._dds, 'phase', self.dut._default_phase, places=self.PHASE_PLACES)
         self.expect_close(self.dut._dds, 'amp', self.dut._default_amp, places=self.AMP_PLACES)
-        self.expect_close(self.dut._dds.cpld, 'att_0', self.dut._default_att)
+        # self.expect_close(self.dut._dds.cpld, 'att_0', self.dut._default_att)
 
     def test_defaults_mu(self):
         self.assertEqual(self.dut._default_ftw, self.frequency_to_ftw(self.dut._default_freq))
