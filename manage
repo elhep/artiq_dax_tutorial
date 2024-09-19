@@ -320,7 +320,7 @@ def make_user_dir(systems_dir, system, user_i, overwrite):
         shutil.copy(user_file_path, 
                     os.path.join(user_dir, "artiq", "user.py"))
         shutil.copy(user_file_path, 
-                    os.path.join(user_dir, "artiq_reference", "user.py"))
+                    os.path.join(user_dir, "artiq_solutions", "user.py"))
         
     # Copy common file
     shutil.copy(os.path.join(experiments_path, 'repository', 'common.py'), 
@@ -328,7 +328,7 @@ def make_user_dir(systems_dir, system, user_i, overwrite):
     shutil.copy(os.path.join(experiments_path, 'repository', 'common.py'), 
                 os.path.join(user_dir, "artiq", "common.py"))
     shutil.copy(os.path.join(experiments_path, 'repository', 'common.py'), 
-                os.path.join(user_dir, "artiq_reference", "common.py"))
+                os.path.join(user_dir, "artiq_solutions", "common.py"))
 
 
 def make_system_dir(systems_dir, system, users, ctl_host, scope_ctl_host, overwirte):
