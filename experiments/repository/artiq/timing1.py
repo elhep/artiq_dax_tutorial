@@ -53,10 +53,10 @@ class Timing1Excercise(EnvExperiment):
         # Reset our system after previous experiment
         self.core.reset()
 
-        # Set SYSTEM time pointer in future
+        # Set SYSTEM time marker in future
         self.core.break_realtime()
 
-        # t will be our LOCAL time pointer. For now it points the same point in timeline as SYSTEM pointer
+        # t will be our LOCAL time marker. For now it points the same point in timeline as SYSTEM: now marker
         t = now_mu()
 
 
@@ -67,7 +67,7 @@ class Timing1Excercise(EnvExperiment):
         self.SecondPulseWidth
         self.DelayToNextPulse
 
-        How to use it with delay and at_mu? Examples:
+        How to use dashboard arguments with delay() and at_mu()? Examples:
         
         delay(self.FirstPulseWidth * ns)
         at_mu(t + self.core.seconds_to_mu(self.FirstPulseWidth * ns))

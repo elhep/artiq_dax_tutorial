@@ -29,7 +29,7 @@ class Timing2Excercise(EnvExperiment):
         # Reset our system after previous experiment
         self.core.reset()
 
-        # Set SYSTEM time pointer in future
+        # Set SYSTEM time marker in future
         self.core.break_realtime()
 
         for i in range(10000):

@@ -25,6 +25,7 @@ class DMAExcercise(EnvExperiment):
 
     @kernel
     def record(self):
+        ttl = self.ttl
         with self.core_dma.record("pulses"):
             for i in range(100):
                 '''
@@ -45,7 +46,7 @@ class DMAExcercise(EnvExperiment):
         self.record()
         pulses_handle = self.core_dma.get_handle("pulses")
 
-        # Set SYSTEM time pointer in future
+        # Set SYSTEM time marker in future
         self.core.break_realtime()
 
         for i in range(100):

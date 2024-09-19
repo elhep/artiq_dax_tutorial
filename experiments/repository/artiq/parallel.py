@@ -20,7 +20,7 @@ class ParallelExcercise(EnvExperiment):
         # Reset our system after previous experiment
         self.core.reset()
     
-        # Set SYSTEM time pointer in future
+        # Set SYSTEM time marker in future
         self.core.break_realtime()
 
         self.urukul.init()
