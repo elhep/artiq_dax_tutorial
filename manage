@@ -351,6 +351,8 @@ def make_system_dir(systems_dir, system, users, ctl_host, scope_ctl_host, overwi
                  scope_ctl_port=scope_controller_ports[system])
     os.chmod(target_ddb_path, 0o644)
 
+    shutil.copytree(os.path.join(experiments_path, 'program'),
+                    os.path.join(system_dir, 'program'))
     shutil.copytree(os.path.join(experiments_path, 'demo_system'),
                     os.path.join(system_dir, 'demo_system'))
     shutil.copy(os.path.join(experiments_path, 'dax_setup.py'),
