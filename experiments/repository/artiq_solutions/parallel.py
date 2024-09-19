@@ -36,11 +36,12 @@ class ParallelExcercise(EnvExperiment):
             # Switch Enable signal, not TTL with analog signal
             self.ttl.pulse(200 * ns)
             self.urukul_channels[0].sw.on()
+            self.urukul_channels[1].sw.on()
             with sequential:
-                self.urukul_channels[1].sw.on()
                 delay(200 * ns)
+                self.urukul_channels[0].sw.off()
+                delay(100 * ns)
+                self.ttl.pulse(100 * ns)
                 self.urukul_channels[1].sw.off()
-        delay(200 * ns)
-        self.urukul_channels[0].sw.off()
 
         self.scope.store_waveform()

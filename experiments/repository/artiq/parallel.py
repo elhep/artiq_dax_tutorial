@@ -40,7 +40,8 @@ class ParallelExcercise(EnvExperiment):
         self.urukul_channels[0].sw.off()
         self.urukul_channels[1].sw.off()
 
-        Switch channel 0 after 200 ns. Switch channel 1 after 400 ns (200ns after channel 0)
+        Switch off channel 0 after 200 ns. Switch off channel 1 after 400 ns (200ns after channel 0)
+        Drive another TTL pulse for 100 ns exactly 100 ns after the previous one.
         use 'with parallel' block and 'with sequential' block 
         '''
         with parallel:
@@ -50,6 +51,5 @@ class ParallelExcercise(EnvExperiment):
         #         Your code in sequential block (which is still in parallel block)
         #
 
-        # You can also write code outside parallel block
 
         self.scope.store_waveform()
