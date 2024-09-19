@@ -318,6 +318,8 @@ def make_user_dir(systems_dir, system, user_i, overwrite):
                 os.path.join(user_dir, "dax", "user.py"))
     shutil.copy(user_file_path, 
                 os.path.join(user_dir, "reference", "user.py"))
+    shutil.copy(os.path.join(experiments_path, 'repository', 'common.py'), 
+                os.path.join(user_dir, "reference", "common.py"))
     os.chmod(user_file_path, 0o664)
 
 
