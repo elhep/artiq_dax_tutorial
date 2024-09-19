@@ -1,6 +1,6 @@
 from artiq.experiment import *
-from user import user_id
-from common import Scope
+import numpy as np
+
 
 class PhaserDemoExcercise(EnvExperiment):
     def build(self):
@@ -17,53 +17,66 @@ class PhaserDemoExcercise(EnvExperiment):
         ]
         self.setattr_device("phaser0")
 
-        self.scope = Scope(self, user_id)  
+        self.center_f = 97 * MHz
+
+        freq_slopes = [
+            np.linspace(2.8 * MHz, 1 * MHz, 100),
+            np.linspace(2.9 * MHz, 2 * MHz, 100),
+            np.full(100, 3 * MHz),
+            np.linspace(3.1 * MHz, 4 * MHz, 100),
+            np.linspace(3.2 * MHz, 5 * MHz, 100),
+        ]
+
+        amp_slopes = [
+            np.linspace(0.375, 0.01, 100) * 0.9,
+            np.linspace(0.10, 0.25, 100) * 0.9,
+            np.linspace(0.05, 0.48, 100) * 0.9,
+            np.linspace(0.10, 0.25, 100) * 0.9,
+            np.linspace(0.375, 0.01, 100) * 0.9,
+        ]
+
+        # Make sure that summed amps never exceed 1.0 (full scale)
+        assert all(sum(amps) <= 1.0 for amps in zip(*amp_slopes))
+
+        self.ftw = [np.concatenate([slope, slope[::-1]]) for slope in freq_slopes]
+        self.amps = [np.concatenate([slope, slope[::-1]]) for slope in amp_slopes]
+        self.length = len(self.ftw[0])
 
     @kernel
     def init(self):
-        self.urukul0_cpld.init()
-        for urukul_ch in self.urukul_channels:
-            urukul_ch.init()
-            urukul_ch.sw.off()
-            urukul_ch.set_att(31.5)
+        self.core.reset()
         self.core.break_realtime()
+
         self.phaser0.init()
-        delay(1 * ms)
-        self.ttl0.set_o(False)
-
-
+        
+        self.ttl0.off()
 
     @kernel
     def run(self):
-        self.scope.setup()
-        # Reset our system after previous experiment
-        self.core.reset()
-
-        # Set SYSTEM time pointer in future
-        self.core.break_realtime()
         self.init()
 
-
-        # for ch in self.urukul_channels:
-        #     ch.init()
-        #     ch.sw.off()
-        #     ch.set_att(0.0)
-        #     ch.set(frequency=25*MHz)
-            
-        duc = (1) * 10 * MHz
-        osc = [10 * MHz, 20 * MHz, 30 * MHz, 40 * MHz, 50 * MHz]
-        # osc = [(i+1) * 10 * MHz for i in range(5)]
         phaser = self.phaser0
-        delay(1 * ms)
-        phaser.channel[0].set_duc_frequency(duc)
-        phaser.channel[0].set_duc_cfg()
+        
         phaser.channel[0].set_att(0 * dB)
+        phaser.channel[0].set_duc_frequency(self.center_f)
+        phaser.channel[0].set_duc_phase(0.25)
+        phaser.channel[0].set_duc_cfg()
+
+        delay(0.1 * ms)
         phaser.duc_stb()
-        delay(1 * ms)
-        for i in range(len(osc)):
-            phaser.channel[0].oscillator[i].set_frequency(osc[i])
-            phaser.channel[0].oscillator[i].set_amplitude_phase(.2)
-            delay(1 * ms)
-        delay(100 * ns)
-        self.ttl0.set_o(True)
-        self.scope.store_waveform()
+        delay(0.1 * ms)
+        
+        while True:
+            for i in range(self.length):
+                for osc in range(5):
+                    phaser.channel[0].oscillator[osc].set_frequency(self.ftw[osc][i])
+                    phaser.channel[0].oscillator[osc].set_amplitude_phase(
+                        self.amps[osc][i], phase=0.25)
+                    delay(5 * ms)
+        # for osc in range(5):
+        #     phaser.channel[0].oscillator[osc].set_frequency(self.ftw[osc])
+        #     phaser.channel[0].oscillator[osc].set_amplitude_phase(
+        #         self.asf[osc], phase=0.25)
+        #     delay(0.1 * ms)
+
+        

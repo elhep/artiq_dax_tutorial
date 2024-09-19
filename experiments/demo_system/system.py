@@ -17,6 +17,9 @@ from demo_system.services.detection import DetectionService
 from demo_system.services.cool_prep import CoolInitService
 from demo_system.services.state import StateService
 
+from demo_system.services.mw_operation import MicrowaveOperationService
+from demo_system.services.mw_operation_sk1 import MicrowaveOperationSK1Service
+
 class DemoSystem(DaxSystem):
     SYS_ID = "demo_system"  # Unique system identifier for archiving data
     SYS_VER = 1  # Tag for archiving data, increment with major hardware changes
@@ -74,6 +77,11 @@ class DemoSystem(DaxSystem):
         self.update_kernel_invariants(
             "ion_load", "detection", "cool_prep", "state"
         )
+
+        # Add operation interfaces
+        self.mw_operation = MicrowaveOperationService(self)
+        self.mw_operation_sk1 = MicrowaveOperationSK1Service(self)
+        self.update_kernel_invariants("mw_operation", "mw_operation_sk1")
 
     @kernel
     def init(self):
