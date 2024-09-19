@@ -26,8 +26,7 @@ class MicrowaveQubitTimeGateScan(GateScan, Experiment):
             "Microwave gate time",
             Scannable(
                 [
-                    RangeScan(1 * us, 200 * us, 200),
-                    NoScan(100 * us),
+                    RangeScan(10 * us, 100 * us, 10),
                 ],
                 global_min=0 * us,
                 unit="us",
@@ -48,7 +47,7 @@ class MicrowaveQubitTimeGateScan(GateScan, Experiment):
         )
         self.update_dataset = self.get_argument(
             "Update dataset",
-            BooleanValue(True),
+            BooleanValue(False),
             tooltip="Store calibrated values in system datasets",
         )
         self.update_kernel_invariants("mw_freq")
@@ -59,12 +58,10 @@ class MicrowaveQubitTimeGateScan(GateScan, Experiment):
 
     @kernel
     def gate_action(self, point, index):
-        self.trigger_ttl.pulse()
         self.microwave.pulse(point.mw_gate_time)
 
     def host_exit(self) -> None:
         """Calibrate microwave Rabi frequency."""
-        self.scope.store_waveform()
 
         # Obtain x data
         scannables = self.get_scannables()

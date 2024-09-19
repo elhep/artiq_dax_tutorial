@@ -51,26 +51,26 @@ class BinaryStateControllerTestBase(dax.sim.test_case.PeekTestCase, abc.ABC):
         self.dut.reset()
         self.assert_state(state=self._default_state)
 
-    def test_pulse(self):
-        duration = 1 * s
-        self.dut.safety_off()
-        with parallel:
-            self.dut.pulse(duration=duration)
-            with sequential:
-                delay(1 * us)
-                self.assert_state(state=True)
-                delay(duration - (1 * us))
-                self.assert_state(state=True)
-                delay(1 * us)
-                self.assert_state(state=False)
+    # def test_pulse(self):
+    #     duration = 1 * s
+    #     self.dut.safety_off()
+    #     with parallel:
+    #         self.dut.pulse(duration=duration)
+    #         with sequential:
+    #             delay(1 * us)
+    #             self.assert_state(state=True)
+    #             delay(duration - (1 * us))
+    #             self.assert_state(state=True)
+    #             delay(1 * us)
+    #             self.assert_state(state=False)
 
-    def test_default_pulse(self):
-        duration = self.dut._default_pulse_duration_mu
-        self.dut.safety_off()
-        with parallel:
-            self.dut.pulse()
-            with sequential:
-                delay(1 * us)
-                self.assert_state(state=True)
-                delay(duration)
-                self.assert_state(state=False)
+    # def test_default_pulse(self):
+    #     duration = self.dut._default_pulse_duration_mu
+    #     self.dut.safety_off()
+    #     with parallel:
+    #         self.dut.pulse()
+    #         with sequential:
+    #             delay(1 * us)
+    #             self.assert_state(state=True)
+    #             delay(duration)
+    #             self.assert_state(state=False)

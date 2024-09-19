@@ -19,7 +19,9 @@ class PlusState(DaxProgram, Experiment):
                 self.core.break_realtime()
 
                 self.q.prep_0_all()
+                delay(1 * us)
                 self.q.h(0)
+                delay(1 * us)
                 self.q.m_z_all()
 
                 self.q.store_measurements_all()

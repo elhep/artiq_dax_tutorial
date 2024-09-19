@@ -74,11 +74,11 @@ class GateScan(DaxScan, DemoSystem, abc.ABC):
         # General arguments
         self._gate_scan_num_samples: int = self.get_argument(
             "Num samples",
-            NumberValue(100, ndecimals=0, scale=1, step=1, min=0),
+            NumberValue(10, ndecimals=0, scale=1, step=1, min=0),
             tooltip="Number of samples per point",
         )
         self._gate_scan_cooling_duration: float = self.get_argument(
-            "Cooling duration", NumberValue(1 * ms, min=0 * ms, unit="ms")
+            "Cooling duration", NumberValue(10 * us, min=0 * ms, unit="ms")
         )
         self.update_kernel_invariants(
             "_gate_scan_num_samples", "_gate_scan_cooling_duration"
@@ -119,7 +119,7 @@ class GateScan(DaxScan, DemoSystem, abc.ABC):
             "_lazy_timing",
             "_enable_cool",
             "_enable_initialization",
-            "_enable_gate_action",
+            "_enable_gate_action"
         )
 
         # Plot arguments
@@ -131,6 +131,10 @@ class GateScan(DaxScan, DemoSystem, abc.ABC):
         )
         self._plot_mean_count: bool = self.get_argument(
             "Plot mean count", BooleanValue(False), group="Plot"
+        )
+
+        self._view_scope: bool = self.get_argument(
+            "View Scope", BooleanValue(False)
         )
 
     def host_enter(self) -> None:
@@ -181,6 +185,12 @@ class GateScan(DaxScan, DemoSystem, abc.ABC):
             # Plot histograms
             self.state.histogram.plot_histogram()
 
+        self._slop_time_mu = self.core.seconds_to_mu(1 * us)
+        self._detect_time_mu = self.core.seconds_to_mu(100 * us)
+        self._cool_time_mu = self.core.seconds_to_mu(200 * us) # self._gate_scan_cooling_duration)
+
+        self.update_kernel_invariants("_slop_time_mu", "_detect_time_mu", "_cool_time_mu")
+
     @kernel
     def device_setup(self):  # type: () -> None
         # Reset core
@@ -190,6 +200,7 @@ class GateScan(DaxScan, DemoSystem, abc.ABC):
         self.core.break_realtime()
         self.gate_setup()
 
+    
     @kernel
     def _gate_scan_run_point(self, point, index):
         if self._lazy_timing or self._buffer_size == 0:
@@ -198,31 +209,20 @@ class GateScan(DaxScan, DemoSystem, abc.ABC):
         # Gate pre-init action
         self.gate_pre_action(point, index)
 
-        if self._lazy_timing:
-            self.core.break_realtime()
-
-        if self._enable_cool:
-            # Cool
-            self.core.break_realtime()
-            self.cool_prep.cool.pulse(self._gate_scan_cooling_duration)
-
-        self.initialize()
-
-        if self._lazy_timing:
-            self.core.break_realtime()
-
-        if self._enable_gate_action:
-            # Perform gate
-            self.gate_action(point, index)
-
-        if self._lazy_timing:
-            self.core.break_realtime()
-
+        self.core.break_realtime()
+        self.trigger_ttl.pulse_mu()
+        delay_mu(self._slop_time_mu)
+        self.cool_prep.cool.pulse_mu(self._cool_time_mu)
+        self.gate_action(point, index)
         # Detect state
-        self.detect()
+        delay_mu(self._slop_time_mu) 
+        self.detection.detect_active_mu(duration=self._detect_time_mu)
+        self.core.break_realtime()
 
     @kernel
     def run_point(self, point, index):
+        if self._view_scope:
+            self.scope.setup()
         # Guarantee slack
         self.core.break_realtime()
         # Configure gate
@@ -241,6 +241,10 @@ class GateScan(DaxScan, DemoSystem, abc.ABC):
             # Clear buffers
             for _ in range(self._buffer_size):
                 self.state.count_active()
+
+        if self._view_scope:
+            self.scope.store_waveform()
+        self.core.break_realtime()
 
     @kernel
     def device_cleanup(self):  # type: () -> None

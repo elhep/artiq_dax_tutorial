@@ -25,7 +25,7 @@ class DetectionService(DaxService, DetectionInterface):
     def init(self) -> None:
         # Default detection time
         self._detection_time: float = self.get_dataset_sys(
-            self.DETECTION_TIME_KEY, 250 * us
+            self.DETECTION_TIME_KEY, 20 * us
         )
         self.update_kernel_invariants("_detection_time")
 
@@ -51,6 +51,7 @@ class DetectionService(DaxService, DetectionInterface):
         :param mode: The mode to use for detection, default `MODES370.DETECT`
         :param trigger_shutter: Whether to trigger the 370 shutter, default `True`
         """
+        trigger_shutter = True
         if duration <= 0:
             # Use default duration
             duration = self.core.seconds_to_mu(self._detection_time)

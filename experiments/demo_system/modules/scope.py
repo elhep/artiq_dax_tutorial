@@ -27,65 +27,56 @@ class ScopeModule(DaxModule):
     def post_init(self):
         pass
 
-    def setup(self):
+    def setup(self, reset=False, sleep_time=3.0):
         if not self.in_sim:
-            # Oscilloscope channels are counted from 1 to 4
-            self.scope.reset()
-
-            self.scope.set_current_datetime()
-
-            self.scope.set_channel(
-                channel=1,
-                vertical_scale=2.5,
-                vertical_position=3,
-                termination_fifty_ohms=False,
-                label="DIO SMA 0",
-                ac_coupling=False
+            self.scope.setup(
+                channel_configs=[
+                    {
+                        "channel": 1,
+                        "vertical_scale": 2.5,
+                        "vertical_position": 3,
+                        "termination_fifty_ohms": False,
+                        "label": "DIO SMA 0",
+                        "ac_coupling": False
+                    },
+                    {
+                        "channel": 2,
+                        "vertical_scale": 1,
+                        "vertical_position": 1.0,
+                        "termination_fifty_ohms": True,
+                        "label": "Urukul 0",
+                        "ac_coupling": True
+                    },
+                    {
+                        "channel": 3,
+                        "vertical_scale": 1,
+                        "vertical_position": -1.0,
+                        "termination_fifty_ohms": True,
+                        "label": "Urukul 1",
+                        "ac_coupling": True
+                    },
+                    {
+                        "channel": 4,
+                        "vertical_scale": 0.5,
+                        "vertical_position": -3.0,
+                        "termination_fifty_ohms": True,
+                        "label": "Phaser RF 0",
+                        "ac_coupling": True
+                    }
+                ],
+                horizontal_scale=500*us,
+                horizontal_position=1000*us,
+                trigger_config={
+                    "channel": 1,
+                    "level": 2.5,
+                    "slope": "FALL",
+                    "mode": "NORMAL"
+                },
+                queue=True,
+                reset=reset
             )
+            self.scope.run_queue(sleep_time=sleep_time)
 
-            self.scope.set_channel(
-                channel=2,
-                vertical_scale=1,
-                vertical_position=1.0,
-                termination_fifty_ohms=True,
-                label="Urukul 0",
-                ac_coupling=True
-            )
-
-            self.scope.set_channel(
-                channel=3,
-                vertical_scale=1,
-                vertical_position=-1.0,
-                termination_fifty_ohms=True,
-                label="Urukul 1",
-                ac_coupling=True
-            )
-
-            self.scope.set_channel(
-                channel=4,
-                vertical_scale=0.5,
-                vertical_position=-3.0,
-                termination_fifty_ohms=True,
-                label="Phaser RF 0",
-                ac_coupling=True
-            )
-
-            # Waveform time will be 10*horizontal scale
-            self.scope.set_horizontal_scale(100*ns)
-            self.scope.set_horizontal_position(400*ns)
-
-            # Slope: RISE/FALL
-            # Mode: NORMAL/AUTO
-            self.scope.set_trigger(
-                channel=1,
-                level=2.5,
-                slope="RISE",
-                mode="NORMAL"
-            )
-            self.scope.start_acquisition()
-            sleep(3)
-    
-    
     def store_waveform(self):
         if not self.in_sim:
             im = Image.open(io.BytesIO(self.scope.get_screen_png()))

@@ -8,7 +8,7 @@ from demo_system.modules.util.state_controller import BinaryStateController
 
 class MicrowaveModule(DDS9910, BinaryStateController, DaxModule):
     DEFAULT_QUBIT_FREQ = 120.034 * MHz
-    DEFAULT_RABI_FREQ = 20.0 * MHz
+    DEFAULT_RABI_FREQ = 5.0 * MHz
     """The default microwave qubit frequency."""
 
     # System dataset keys
@@ -22,8 +22,8 @@ class MicrowaveModule(DDS9910, BinaryStateController, DaxModule):
             dds_key="urukul0_ch0",
             default_freq=self.DEFAULT_QUBIT_FREQ,
             default_amp=0.5,
-            default_att=17 * dB,
-            min_att=16 * dB
+            default_att=10 * dB,
+            min_att=10 * dB
         )
 
         BinaryStateController.build(

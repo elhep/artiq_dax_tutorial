@@ -19,7 +19,7 @@ class TriggerTTLModule(Switch, BinaryStateController):
         # For some reason, BSC init is not being called with super
         BinaryStateController.init(self)
 
-        self.set_default_pulse_duration(10 * ns)
+        self.set_default_pulse_duration(10 * us)
 
     @kernel
     def set_cb(self, state: TBool) -> None:

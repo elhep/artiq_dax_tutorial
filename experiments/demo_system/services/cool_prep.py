@@ -64,4 +64,4 @@ class Preparing(DaxService, BinaryStateController):
 
     @kernel
     def _init_set(self, state: TBool):
-        self._370.set_state(mode=self._370.MODES.Prep, state=state, realtime=True)
+        self._370.set_state(mode=self._370.MODES.Prep, state=state, realtime=False)

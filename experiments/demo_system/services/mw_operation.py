@@ -54,7 +54,7 @@ class MicrowaveOperationService(DaxService, OperationInterface):
         self.update_kernel_invariants("_realtime")
         self._state.histogram.plot_histogram()
         self._state.histogram.plot_probability()
-        self._scope.setup()
+        # self._scope.setup()
 
     @host_only
     def post_init(self) -> None:
@@ -85,9 +85,11 @@ class MicrowaveOperationService(DaxService, OperationInterface):
 
     @kernel
     def prep_0_all(self):
-        self._trigger.pulse()
+        # self._trigger.pulse()
         # Cool
+        delay(1 * us)
         self._cool_pump.cool.pulse()
+        delay(1 * us)
         # Initialize
         self._cool_pump.prep.pulse()
 
@@ -109,7 +111,7 @@ class MicrowaveOperationService(DaxService, OperationInterface):
     @kernel
     def store_measurements(self, qubits: TList(TInt32)):
         self._state.measure_channels([self._channel_map()[q] for q in qubits])
-        self._scope.store_waveform()
+        # self._scope.store_waveform()
 
     """Gate functions"""
 

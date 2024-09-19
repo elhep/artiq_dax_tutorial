@@ -24,17 +24,11 @@ class MicrowaveQubitFreqGateScan(GateScan, Experiment):
             "Microwave gate frequency",
             Scannable(
                 [
-                    CenterScan(
-                        self.microwave.fetch_qubit_freq(),
-                        self.DEFAULT_SPAN,
-                        self.DEFAULT_SPAN / 100,
-                    ),
                     RangeScan(
                         self.microwave.fetch_qubit_freq() - self.DEFAULT_SPAN / 2,
                         self.microwave.fetch_qubit_freq() + self.DEFAULT_SPAN / 2,
-                        100,
-                    ),
-                    NoScan(self.microwave.fetch_qubit_freq()),
+                        10,
+                    )
                 ],
                 global_min=0 * MHz,
                 global_max=400 * MHz,
@@ -47,7 +41,7 @@ class MicrowaveQubitFreqGateScan(GateScan, Experiment):
         self.mw_gate_duration = self.get_argument(
             "Microwave gate duration",
             NumberValue(
-                self.microwave.fetch_pi_time(),
+                200 * us,
                 min=0 * us,
                 unit="us",
                 ndecimals=3,
@@ -56,7 +50,7 @@ class MicrowaveQubitFreqGateScan(GateScan, Experiment):
         )
         self.update_dataset = self.get_argument(
             "Update dataset",
-            BooleanValue(True),
+            BooleanValue(False),
             tooltip="Store calibrated values in system datasets",
         )
         self.update_kernel_invariants("mw_gate_duration")
@@ -68,12 +62,10 @@ class MicrowaveQubitFreqGateScan(GateScan, Experiment):
 
     @kernel
     def gate_action(self, point, index):
-        self.trigger_ttl.pulse()
         self.microwave.pulse(self.mw_gate_duration)
 
     def host_exit(self) -> None:
         """Calibrate microwave qubit frequency."""
-        self.scope.store_waveform()
         # Obtain x data
         scannables = self.get_scannables()
         freq = np.asarray(scannables[self.MW_GATE_FREQ_KEY])

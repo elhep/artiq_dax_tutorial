@@ -63,7 +63,7 @@ class BinaryStateController(DaxHasSystem):
         self.core.wait_until_mu(now_mu())
 
     @kernel
-    def pulse_mu(self, duration: TInt64):
+    def pulse_mu(self, duration: TInt64 = 0):
         """Pulse for a given period of time (symmetric operation).
 
         :param duration: The pulse duration in machine units

@@ -42,18 +42,19 @@ class Laser370(DaxModule):
         self._shutter = DDS9910(
             self,
             "shutter",
-            dds_key="urukul0_ch2",
+            dds_key="urukul0_ch1",
             default_freq=250 * MHz,
-            default_att=17 * dB,
+            default_att=10 * dB,
+            default_amp=1.0,
             min_att=10.0,
             default_sw=True
         )
         self._detect_prep_cool_dds = DDS9910(
             self,
             "detect_prep_cool_dds",
-            dds_key="urukul0_ch1",
+            dds_key="urukul0_ch2",
             default_freq=self._cool_freq,
-            default_att=17 * dB,
+            default_att=10 * dB,
             default_amp=self._cool_amp,
             min_att=10.0,
             default_sw=True
@@ -107,6 +108,7 @@ class Laser370(DaxModule):
         self.core.break_realtime()
         self.reset()
 
+
         self.core.wait_until_mu(now_mu())
 
     """Module Base Functions"""
@@ -155,10 +157,9 @@ class Laser370(DaxModule):
         :param mode: see self.MODE enumeration
         :param realtime: Compensate for programming latencies
         """
-        with parallel:
-            # Configure mode
-            self.config_mode(mode=mode, realtime=realtime)
-            self.set_shutter(state=state, realtime=realtime)
+        # Configure mode
+        self.config_mode(mode=mode, realtime=realtime)
+        self.set_shutter(state=state, realtime=realtime)
 
     @kernel
     def config_mode(self, mode: TInt32, realtime: TBool = False):
@@ -167,23 +168,21 @@ class Laser370(DaxModule):
         :param mode: see self.STATE enumeration
         :param realtime: Compensate for programming latencies
         """
-        with parallel:
-            # Configure DDS Frequency
-            if mode == MODES370.COOL:
-                self._detect_prep_cool_dds.config_freq(self._cool_freq, realtime=realtime)
-                self._detect_prep_cool_dds.config_amp(self._cool_amp, realtime=realtime)
-            elif mode == MODES370.Prep:
-                self._detect_prep_cool_dds.config_freq(self._prep_freq, realtime=realtime)
-                self._detect_prep_cool_dds.config_amp(self._prep_amp, realtime=realtime)
-            elif mode == MODES370.DETECT:
-                self._detect_prep_cool_dds.config_freq(self._detect_freq, realtime=realtime)
-                self._detect_prep_cool_dds.config_amp(self._detect_amp, realtime=realtime)
-
-            # Enable DDS
-            self._detect_prep_cool_dds.set(mode != MODES370.OFF, realtime=realtime)
-
-            # Enable Sidebands
-            self._cool_sw.set(mode == MODES370.COOL, realtime=realtime)
+        # Configure DDS Frequency
+        if mode == MODES370.COOL:
+            self._detect_prep_cool_dds.config_freq(self._cool_freq, realtime=realtime)
+            self._detect_prep_cool_dds.config_amp(self._cool_amp, realtime=realtime)
+        elif mode == MODES370.Prep:
+            self._detect_prep_cool_dds.config_freq(self._prep_freq, realtime=realtime)
+            self._detect_prep_cool_dds.config_amp(self._prep_amp, realtime=realtime)
+        elif mode == MODES370.DETECT:
+            self._detect_prep_cool_dds.config_freq(self._detect_freq, realtime=realtime)
+            self._detect_prep_cool_dds.config_amp(self._detect_amp, realtime=realtime)
+        delay(1*us)
+        # Enable DDS
+        self._detect_prep_cool_dds.set(mode != MODES370.OFF, realtime=realtime)
+        # Enable Sidebands
+        self._cool_sw.set(mode == MODES370.COOL, realtime=realtime)
 
         self.mode = mode
 
