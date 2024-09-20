@@ -64,12 +64,8 @@ class Timing1Excercise(EnvExperiment):
         self.ttl.on()
         delay(self.FirstPulseWidth * ns)
         self.ttl.off()
-
-        # Because of delay() function, SYSTEM pointer is DelayValue further. Let's drive another pulse using at_mu:
-        at_mu(t + # start with local pointer
-              self.core.seconds_to_mu(self.FirstPulseWidth * ns) + # add FirstPulseWidth to "catch" system pointer
-              self.core.seconds_to_mu(self.DelayToNextPulse * ns))  # add Delay value
-
+        # Wait a DelayToNextPulse nanosecond before start of the second pulse
+        delay(self.DelayToNextPulse * ns)
         self.ttl.pulse(self.SecondPulseWidth * ns)
         # Pulse method consists delay() function inside. SYSTEM pointer is now at falling edge of the second pulse.
 

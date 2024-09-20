@@ -63,14 +63,13 @@ class Timing1Excercise(EnvExperiment):
         '''
         TODO
         Drive two pulses with self.ttl object. Remember about delay between. Time values are defined by arguments:
-        self.FirstPulseWidth
-        self.SecondPulseWidth
-        self.DelayToNextPulse
+        self.FirstPulseWidth * ns
+        self.SecondPulseWidth * ns
+        self.DelayToNextPulse * ns
 
-        How to use dashboard arguments with delay() and at_mu()? Examples:
+        How to use dashboard arguments with delay()? Examples:
         
         delay(self.FirstPulseWidth * ns)
-        at_mu(t + self.core.seconds_to_mu(self.FirstPulseWidth * ns))
         '''
         # TODO Your code should be here
 
