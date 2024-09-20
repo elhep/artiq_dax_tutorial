@@ -28,4 +28,4 @@ class PlusState(DaxProgram, Experiment):
 
     def analyze(self):
         data = np.asarray(self.data_context.get_raw())
-        self.logger.info(f'Collected data:\n{data}')
+        print(f'Collected data:\n{data}')

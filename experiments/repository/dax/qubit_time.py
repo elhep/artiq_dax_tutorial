@@ -26,7 +26,7 @@ class MicrowaveQubitTimeGateScan(GateScan, Experiment):
             "Microwave gate time",
             Scannable(
                 [
-                    RangeScan(10 * us, 100 * us, 10),
+                    RangeScan(10 * us, 1000 * us, 10),
                 ],
                 global_min=0 * us,
                 unit="us",
