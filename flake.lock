@@ -11,17 +11,17 @@
         "src-pythonparser": "src-pythonparser"
       },
       "locked": {
-        "lastModified": 1724401549,
-        "narHash": "sha256-7XM9kitfLffUvBNbFnpMWy6WcO5I6KGfR21O5LzxoWs=",
-        "ref": "release-7",
-        "rev": "38c72fdab41679c300c235d960e87b9e06bea5b4",
-        "revCount": 8208,
+        "lastModified": 1729827932,
+        "narHash": "sha256-2Gqxm9vx4IHlcgCYXSWcdOQKqMYUTNYiYrSAokDmBwI=",
+        "ref": "release-8",
+        "rev": "431c415423e709178263d3463f8c4ab905e9b796",
+        "revCount": 8971,
         "type": "git",
         "url": "https://github.com/m-labs/artiq.git"
       },
       "original": {
-        "ref": "release-7",
-        "rev": "38c72fdab41679c300c235d960e87b9e06bea5b4",
+        "ref": "release-8",
+        "rev": "431c415423e709178263d3463f8c4ab905e9b796",
         "type": "git",
         "url": "https://github.com/m-labs/artiq.git"
       }
@@ -52,25 +52,144 @@
         "type": "github"
       }
     },
-    "artiq-extrapkg": {
+    "artiq-comtools_2": {
       "inputs": {
-        "artiq": [
-          "artiq"
+        "flake-utils": "flake-utils_2",
+        "nixpkgs": [
+          "artiq-extrapkg",
+          "artiqpkgs",
+          "nixpkgs"
+        ],
+        "sipyco": [
+          "artiq-extrapkg",
+          "artiqpkgs",
+          "sipyco"
         ]
       },
       "locked": {
-        "lastModified": 1720601079,
-        "narHash": "sha256-e3kclALHOTts62OP738RLHFzl9zWAmVIA7qBPTskr+c=",
-        "ref": "release-7",
-        "rev": "5638bd2bb3f99c853d9ad31e7380effa21f1ae3f",
-        "revCount": 46,
+        "lastModified": 1720768567,
+        "narHash": "sha256-3VoK7o5MtHtbHLrc6Pv+eQWFtaz5Gd/YWyV5TD3c5Ss=",
+        "owner": "m-labs",
+        "repo": "artiq-comtools",
+        "rev": "f93570d8f2ed5a3cfb3e1c16ab00f2540551e994",
+        "type": "github"
+      },
+      "original": {
+        "owner": "m-labs",
+        "repo": "artiq-comtools",
+        "type": "github"
+      }
+    },
+    "artiq-extrapkg": {
+      "inputs": {
+        "artiqpkgs": "artiqpkgs",
+        "daxpkgs": "daxpkgs"
+      },
+      "locked": {
+        "lastModified": 1729235142,
+        "narHash": "sha256-g4k1JlzLnuCVBJkxaJVscDzTtZkeVZ/HEypD6x+xi2U=",
+        "ref": "release-8",
+        "rev": "216a40b81713af415a82ee4c9d2ad91b59921f18",
+        "revCount": 126,
         "type": "git",
         "url": "https://git.m-labs.hk/M-Labs/artiq-extrapkg.git"
       },
       "original": {
-        "ref": "release-7",
+        "ref": "release-8",
         "type": "git",
         "url": "https://git.m-labs.hk/M-Labs/artiq-extrapkg.git"
+      }
+    },
+    "artiq-stubs": {
+      "inputs": {
+        "artiqpkgs": [
+          "artiq-extrapkg",
+          "daxpkgs",
+          "artiqpkgs"
+        ],
+        "flake8-artiq": [
+          "artiq-extrapkg",
+          "daxpkgs",
+          "flake8-artiq"
+        ],
+        "nixpkgs": [
+          "artiq-extrapkg",
+          "daxpkgs",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1722288472,
+        "narHash": "sha256-KXyTCZNwXkMayGuOYLLIg8q/eCPC5W0pdcGQ0XKYoNY=",
+        "ref": "release-7",
+        "rev": "b3d818f61ffffc29226d4aa3845dece9941d61cd",
+        "revCount": 37,
+        "type": "git",
+        "url": "https://gitlab.com/duke-artiq/artiq-stubs.git"
+      },
+      "original": {
+        "ref": "release-7",
+        "type": "git",
+        "url": "https://gitlab.com/duke-artiq/artiq-stubs.git"
+      }
+    },
+    "artiqpkgs": {
+      "inputs": {
+        "artiq-comtools": "artiq-comtools_2",
+        "mozilla-overlay": "mozilla-overlay_2",
+        "nixpkgs": "nixpkgs_2",
+        "sipyco": "sipyco_2",
+        "src-migen": "src-migen_2",
+        "src-misoc": "src-misoc_2",
+        "src-pythonparser": "src-pythonparser_2"
+      },
+      "locked": {
+        "lastModified": 1729827932,
+        "narHash": "sha256-2Gqxm9vx4IHlcgCYXSWcdOQKqMYUTNYiYrSAokDmBwI=",
+        "ref": "release-8",
+        "rev": "431c415423e709178263d3463f8c4ab905e9b796",
+        "revCount": 8971,
+        "type": "git",
+        "url": "https://github.com/m-labs/artiq.git"
+      },
+      "original": {
+        "ref": "release-8",
+        "type": "git",
+        "url": "https://github.com/m-labs/artiq.git"
+      }
+    },
+    "daxpkgs": {
+      "inputs": {
+        "artiq-stubs": "artiq-stubs",
+        "artiqpkgs": [
+          "artiq-extrapkg",
+          "artiqpkgs"
+        ],
+        "flake8-artiq": "flake8-artiq",
+        "nixpkgs": [
+          "artiq-extrapkg",
+          "artiqpkgs",
+          "nixpkgs"
+        ],
+        "sipyco": [
+          "artiq-extrapkg",
+          "artiqpkgs",
+          "sipyco"
+        ],
+        "trap-dac-utils": "trap-dac-utils"
+      },
+      "locked": {
+        "lastModified": 1729547028,
+        "narHash": "sha256-l7GGLjTrGtF23XYsdjQmLPgccDDUwjbGQQsQ3lhn/SI=",
+        "ref": "refs/heads/master",
+        "rev": "dbe0e8f3902527c6254589303e020db08760dd85",
+        "revCount": 1384,
+        "type": "git",
+        "url": "https://gitlab.com/duke-artiq/dax.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://gitlab.com/duke-artiq/dax.git"
       }
     },
     "flake-utils": {
@@ -91,7 +210,100 @@
         "type": "github"
       }
     },
+    "flake-utils_2": {
+      "inputs": {
+        "systems": "systems_2"
+      },
+      "locked": {
+        "lastModified": 1710146030,
+        "narHash": "sha256-SZ5L6eA7HJ/nmkzGG7/ISclqe6oZdOZTNoesiInkXPQ=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "b1d9ab70662946ef0850d488da1c9019f3a9752a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "flake-utils_3": {
+      "inputs": {
+        "systems": "systems_3"
+      },
+      "locked": {
+        "lastModified": 1710146030,
+        "narHash": "sha256-SZ5L6eA7HJ/nmkzGG7/ISclqe6oZdOZTNoesiInkXPQ=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "b1d9ab70662946ef0850d488da1c9019f3a9752a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "flake-utils_4": {
+      "inputs": {
+        "systems": "systems_4"
+      },
+      "locked": {
+        "lastModified": 1705309234,
+        "narHash": "sha256-uNRRNRKmJyCRC/8y1RqBkqWBLM034y4qN7EprSdmgyA=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "1ef2e671c3b0c19053962c07dbda38332dcebf26",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "flake8-artiq": {
+      "inputs": {
+        "flake-utils": "flake-utils_3",
+        "nixpkgs": [
+          "artiq-extrapkg",
+          "daxpkgs",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1722261486,
+        "narHash": "sha256-F+43turwuIdCcs8yu4rXCtSEE2ZDssFDEFex5+Uel4E=",
+        "ref": "refs/heads/master",
+        "rev": "2888fa292a52ac6666590e1429786210cda04b18",
+        "revCount": 111,
+        "type": "git",
+        "url": "https://gitlab.com/duke-artiq/flake8-artiq.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://gitlab.com/duke-artiq/flake8-artiq.git"
+      }
+    },
     "mozilla-overlay": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1704373101,
+        "narHash": "sha256-+gi59LRWRQmwROrmE1E2b3mtocwueCQqZ60CwLG+gbg=",
+        "owner": "mozilla",
+        "repo": "nixpkgs-mozilla",
+        "rev": "9b11a87c0cc54e308fa83aac5b4ee1816d5418a2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mozilla",
+        "repo": "nixpkgs-mozilla",
+        "type": "github"
+      }
+    },
+    "mozilla-overlay_2": {
       "flake": false,
       "locked": {
         "lastModified": 1704373101,
@@ -109,16 +321,32 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1685573264,
-        "narHash": "sha256-Zffu01pONhs/pqH07cjlF10NnMDLok8ix5Uk4rhOnZQ=",
+        "lastModified": 1729973466,
+        "narHash": "sha256-knnVBGfTCZlQgxY1SgH0vn2OyehH9ykfF8geZgS95bk=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "380be19fbd2d9079f677978361792cb25e8a3635",
+        "rev": "cd3e8833d70618c4eea8df06f95b364b016d4950",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-22.05",
+        "ref": "nixos-24.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1728740863,
+        "narHash": "sha256-u+rxA79a0lyhG+u+oPBRtTDtzz8kvkc9a6SWSt9ekVc=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "a3f9ad65a0bf298ed5847629a57808b97e6e8077",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-24.05",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -159,6 +387,28 @@
         "type": "github"
       }
     },
+    "sipyco_2": {
+      "inputs": {
+        "nixpkgs": [
+          "artiq-extrapkg",
+          "artiqpkgs",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1728371104,
+        "narHash": "sha256-PPnAyDedUQ7Og/Cby9x5OT9wMkNGTP8GS53V6N/dk4w=",
+        "owner": "m-labs",
+        "repo": "sipyco",
+        "rev": "094a6cd63ffa980ef63698920170e50dc9ba77fd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "m-labs",
+        "repo": "sipyco",
+        "type": "github"
+      }
+    },
     "src-artiq_tektronix_osc": {
       "flake": false,
       "locked": {
@@ -191,6 +441,22 @@
         "type": "github"
       }
     },
+    "src-migen_2": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1727677091,
+        "narHash": "sha256-Zg3SQnTwMM/VkOGKogbPyuCC2NhLy8HB2SPEUWWNgCU=",
+        "owner": "m-labs",
+        "repo": "migen",
+        "rev": "c19ae9f8ae162ffe2d310a92bfce53ac2a821bc8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "m-labs",
+        "repo": "migen",
+        "type": "github"
+      }
+    },
     "src-misoc": {
       "flake": false,
       "locked": {
@@ -209,7 +475,41 @@
         "url": "https://github.com/m-labs/misoc.git"
       }
     },
+    "src-misoc_2": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1728978817,
+        "narHash": "sha256-b4633jrhh4i+KunZq4kNlyhdm9BCsEJwKs+6KINKV2o=",
+        "ref": "refs/heads/master",
+        "rev": "386b544776b66cea148da67d06a4b3a4151179f9",
+        "revCount": 2459,
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/m-labs/misoc.git"
+      },
+      "original": {
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/m-labs/misoc.git"
+      }
+    },
     "src-pythonparser": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1628745371,
+        "narHash": "sha256-p6TgeeaK4NEmbhimEXp31W8hVRo4DgWmcCoqZ+UdN60=",
+        "owner": "m-labs",
+        "repo": "pythonparser",
+        "rev": "5413ee5c9f8760e95c6acd5d6e88dabb831ad201",
+        "type": "github"
+      },
+      "original": {
+        "owner": "m-labs",
+        "repo": "pythonparser",
+        "type": "github"
+      }
+    },
+    "src-pythonparser_2": {
       "flake": false,
       "locked": {
         "lastModified": 1628745371,
@@ -238,6 +538,74 @@
         "owner": "nix-systems",
         "repo": "default",
         "type": "github"
+      }
+    },
+    "systems_2": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "systems_3": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "systems_4": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "trap-dac-utils": {
+      "inputs": {
+        "flake-utils": "flake-utils_4",
+        "nixpkgs": [
+          "artiq-extrapkg",
+          "daxpkgs",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1718374915,
+        "narHash": "sha256-XBB+9VPF8njZzqMrOaWlqlbf+NrnnDIvfVsiig2TPvc=",
+        "ref": "refs/heads/master",
+        "rev": "c3cf4be6bf6b1a42fc57eecd5afebb0beddfb02a",
+        "revCount": 300,
+        "type": "git",
+        "url": "https://gitlab.com/duke-artiq/trap-dac-utils.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://gitlab.com/duke-artiq/trap-dac-utils.git"
       }
     }
   },

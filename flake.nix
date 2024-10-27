@@ -1,10 +1,10 @@
 {
   inputs = {
     src-artiq_tektronix_osc = { url = git+https://github.com/elhep/artiq_tektronix_oscilloscope.git; flake = false; };
-    artiq.url = "git+https://github.com/m-labs/artiq.git?ref=release-7&rev=38c72fdab41679c300c235d960e87b9e06bea5b4";
+    artiq.url = "git+https://github.com/m-labs/artiq.git?ref=release-8&rev=431c415423e709178263d3463f8c4ab905e9b796";
     artiq-comtools.follows = "artiq/artiq-comtools";
     artiq-extrapkg = {
-      url = "git+https://git.m-labs.hk/M-Labs/artiq-extrapkg.git?ref=release-7";
+      url = "git+https://git.m-labs.hk/M-Labs/artiq-extrapkg.git?ref=release-8";
       inputs.artiq.follows = "artiq";
     };
     nixpkgs.follows = "artiq/nixpkgs";
@@ -20,8 +20,8 @@
         pname = "artiq_tektronix_osc";
         version = "1.0.0";
         src = src-artiq_tektronix_osc;
-        propagatedBuildInputs =  [artiq.inputs.sipyco.packages.x86_64-linux.sipyco] ++
-          (with pkgs.python3Packages; [ pyvisa-py zeroconf psutil numpy ]);
+        buildInputs = [artiq.inputs.sipyco.packages.x86_64-linux.sipyco];
+        propagatedBuildInputs = (with pkgs.python3Packages; [ pyvisa-py zeroconf psutil numpy ]);
         patches = [ ./tektronix.patch ]; # setup.py tries to pull sipyco from git, fails
       };
 
@@ -38,7 +38,6 @@
             ps.pillow
 
             # Additional packages
-            artiq-full.artiq-comtools
             # ps.paramiko # needed for flashing boards remotely (artiq_flash -H)
             artiq_tektronix_osc
           ]))
