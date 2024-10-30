@@ -316,15 +316,11 @@ def make_user_dir(systems_dir, system, user_i, overwrite):
             user_file.write("# This file defines your user ID. DO NOT EDIT!\n")
             user_file.write(f"user_id = {user_i}\n")
         shutil.copy(user_file_path, 
-                    os.path.join(user_dir, "dax", "user.py"))
-        shutil.copy(user_file_path, 
                     os.path.join(user_dir, "artiq", "user.py"))
         shutil.copy(user_file_path, 
                     os.path.join(user_dir, "artiq_solutions", "user.py"))
         
     # Copy common file
-    shutil.copy(os.path.join(experiments_path, 'repository', 'common.py'), 
-                os.path.join(user_dir, "dax", "common.py"))
     shutil.copy(os.path.join(experiments_path, 'repository', 'common.py'), 
                 os.path.join(user_dir, "artiq", "common.py"))
     shutil.copy(os.path.join(experiments_path, 'repository', 'common.py'), 
@@ -351,24 +347,9 @@ def make_system_dir(systems_dir, system, users, ctl_host, scope_ctl_host, overwi
                  scope_ctl_port=scope_controller_ports[system])
     os.chmod(target_ddb_path, 0o644)
 
-    shutil.copytree(os.path.join(experiments_path, 'program'),
-                    os.path.join(system_dir, 'program'))
-    shutil.copytree(os.path.join(experiments_path, 'demo_system'),
-                    os.path.join(system_dir, 'demo_system'))
-    shutil.copy(os.path.join(experiments_path, 'dax_setup.py'),
-                os.path.join(system_dir, 'dax_setup.py'))
-    shutil.copy(os.path.join(experiments_path, 'device_db_sim.py'),
-                os.path.join(system_dir, 'device_db_sim.py'))
-
     # At this point user directories never exist
     for user_i in range(users):
         make_user_dir(systems_dir, system, user_i, False)
-
-    subprocess.Popen(
-        "artiq_run --device-db device_db_sim.py dax_setup.py -c DaxSetup -q".split(),
-        cwd=system_dir,
-    )
-
 
 def deploy():
     system = args.system
