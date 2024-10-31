@@ -1,12 +1,12 @@
 usb_hub_prefix = "1:9"
 
 ftdi_mapping = {
-    'A': ','.join(usb_hub_prefix, '4'),
-    'B': ','.join(usb_hub_prefix, '3'),
-    'C': ','.join(usb_hub_prefix, '2'),
-    'D': ','.join(usb_hub_prefix, '1,1'),
-    'E': ','.join(usb_hub_prefix, '1,3'),
-    'F': ','.join(usb_hub_prefix, '1,2'),
+    'A': ','.join([usb_hub_prefix, '1,1']),
+    'B': ','.join([usb_hub_prefix, '1,2']),
+    'C': ','.join([usb_hub_prefix, '1,3']),
+    'D': ','.join([usb_hub_prefix, '1,4']),
+    'E': ','.join([usb_hub_prefix, '2']),
+    'F': ','.join([usb_hub_prefix, '3']),
     'X': None
 }
 
@@ -21,11 +21,11 @@ ip_mapping = {
 }
 
 scope_ip_mapping = {
-    'A': '192.168.95.182',
-    'B': '192.168.95.142',
-    'C': '192.168.95.164',
-    'D': '192.168.95.181',
-    'E': '192.168.95.165',
+    'A': '192.168.95.166',
+    'B': '192.168.95.181',
+    'C': '192.168.95.158',
+    'D': '192.168.95.141',
+    'E': '192.168.95.142',
     'F': '192.168.95.157',
     'X': None
 }
