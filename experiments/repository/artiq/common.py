@@ -20,31 +20,31 @@ class Scope:
                     "vertical_scale": 2.5,
                     "vertical_position": 3,
                     "termination_fifty_ohms": False,
-                    "label": "DIO SMA 0",
+                    "label": "DIO SMA 1",
                     "ac_coupling": False
                 },
                 {
                     "channel": 2,
                     "vertical_scale": 1,
                     "vertical_position": 1.0,
-                    "termination_fifty_ohms": True,
-                    "label": "Urukul 0",
-                    "ac_coupling": True
+                    "termination_fifty_ohms": False,
+                    "label": "DIO SMA 3",
+                    "ac_coupling": False
                 },
                 {
                     "channel": 3,
                     "vertical_scale": 1,
                     "vertical_position": -1.0,
                     "termination_fifty_ohms": True,
-                    "label": "Urukul 1",
-                    "ac_coupling": True
+                    "label": "Urukul 0",
+                    "ac_coupling": False
                 },
                 {
                     "channel": 4,
-                    "vertical_scale": 0.5,
+                    "vertical_scale": 2,
                     "vertical_position": -3.0,
-                    "termination_fifty_ohms": True,
-                    "label": "Phaser RF 0",
+                    "termination_fifty_ohms": False,
+                    "label": "Fastino 0",
                     "ac_coupling": True
                 }
             ],
