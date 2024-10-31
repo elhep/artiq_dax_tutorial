@@ -11,15 +11,14 @@ class Initialize(EnvExperiment):
         self.setattr_device("core")
         self.setattr_device("core_dma")
 
-        self.setattr_device("ttl0")
+        self.setattr_device("ttl1")
+        self.setattr_device("ttl3")
         self.setattr_device("urukul0_cpld")
         self.setattr_device("urukul0_ch0")
-        self.setattr_device("urukul0_ch1")
         self.urukul_channels = [
-            self.urukul0_ch0,
-            self.urukul0_ch1
+            self.urukul0_ch0
         ]
-        self.setattr_device("phaser0")
+        self.setattr_device("fastino0")
 
         self.scope = Scope(self, user_id)   
 
@@ -42,15 +41,16 @@ class Initialize(EnvExperiment):
         self.urukul0_ch0.set_att(10.0)
         self.urukul0_ch0.sw.on()
 
-        self.urukul0_ch1.set(frequency=20 * MHz)
-        self.urukul0_ch1.set_att(10.0)
-        self.urukul0_ch1.sw.on()
-
         delay(1 * ms)
 
         # Starting TTL sequence will trigger the scope
         for _ in range(100):
-            self.ttl0.pulse(100 * ns)
+            self.ttl1.pulse(100 * ns)
+            self.ttl3.pulse(100 * ns)
+            # TODO: Add ttl5 input
+            self.fastino0.set_dac(dac=0, voltage=3*V)
+            delay(1*us)
+            self.fastino0.set_dac(dac=0, voltage=0*V)
             delay(100 * ns)
 
     def run(self):        
