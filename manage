@@ -199,7 +199,9 @@ def generate_ddb(target_path, system, ctl_host, scope_ip, scope_ctl_host, scope_
             ctl_host=ctl_host,
             corelog_ctl_port=corelog_controller_ports[system],
             moninj_proxy_port=moninj_proxy_ports[system],
-            moninj_ctl_port=moninj_controller_ports[system]
+            moninj_ctl_port=moninj_controller_ports[system],
+            coreanalyzer_proxy_port=coreanalyzer_proxy_ports[system],
+            coreanalyzer_ctl_port=coreanalyzer_controller_ports[system],
         ))
         if scope_ip is not None and scope_ctl_port is not None:
             f.write(scope_template.format(
