@@ -1,10 +1,12 @@
+usb_hub_prefix = "1:9"
+
 ftdi_mapping = {
-    'A': '1:5,4',
-    'B': '1:5,3',
-    'C': '1:5,2',
-    'D': '1:5,1,1',
-    'E': '1:5,1,3',
-    'F': '1:5,1,2',
+    'A': ','.join(usb_hub_prefix, '4'),
+    'B': ','.join(usb_hub_prefix, '3'),
+    'C': ','.join(usb_hub_prefix, '2'),
+    'D': ','.join(usb_hub_prefix, '1,1'),
+    'E': ','.join(usb_hub_prefix, '1,3'),
+    'F': ','.join(usb_hub_prefix, '1,2'),
     'X': None
 }
 
