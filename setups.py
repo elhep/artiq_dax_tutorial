@@ -68,6 +68,26 @@ moninj_proxy_ports = {
     'X': 1383   # default
 }
 
+coreanalyzer_controller_ports = {
+    'A': 1683,
+    'B': 1684,
+    'C': 1685,
+    'D': 1686,
+    'E': 1687,
+    'F': 1688,
+    'X': 1384   # default
+}
+
+coreanalyzer_proxy_ports = {
+    'A': 1783,
+    'B': 1784,
+    'C': 1785,
+    'D': 1786,
+    'E': 1787,
+    'F': 1788,
+    'X': 1383   # default
+}
+
 master_notify_ports = {
     'A': 3250,
     'B': 3251,
