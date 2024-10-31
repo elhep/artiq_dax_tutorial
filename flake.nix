@@ -25,6 +25,24 @@
         patches = [ ./tektronix.patch ]; # setup.py tries to pull sipyco from git, fails
       };
 
+      makeArtiqBoardPackage = variant: artiq.makeArtiqBoardPackage {
+        target = "kasli";
+        variant = variant;
+        buildCommand = 
+          "python -m artiq.gateware.targets.kasli ${./firmware}/${variant}.json";
+      };
+
+      makeVariantDDB = variant: pkgs.runCommand "ddb-${variant}"  
+      {
+        buildInputs = [
+          artiq.devShells.x86_64-linux.boards.buildInputs
+        ];
+      }
+      ''
+      mkdir -p $out
+      artiq_ddb_template ${./firmware}/${variant}.json -o $out/device_db.py
+      '';
+
     in rec
     {
       # Default shell for `nix develop`
@@ -49,6 +67,11 @@
         name="qce24-artiq-tutorial";
         paths = devShells.x86_64-linux.default.buildInputs;
       };
+      packages.x86_64-linux = {
+        tutorial = makeArtiqBoardPackage "tutorial";
+
+        ddb_tutorial = makeVariantDDB "tutorial";
+      };
     };
 
   # Settings to enable substitution from the M-Labs servers (avoiding local builds)
@@ -57,5 +80,6 @@
       "nixbld.m-labs.hk-1:5aSRVA5b320xbNvu30tqxVPXpld73bhtOeH6uAjRyHc="
     ];
     extra-substituters = [ "https://nixbld.m-labs.hk" ];
+    extra-sandbox-paths = "/opt";
   };
 }
