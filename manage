@@ -292,7 +292,7 @@ def make_user_dir(systems_dir, system, user_i, overwrite):
     
     # Copy experiments
     prefix_ignore = ['__init__.py']
-    ignore = ['user.py', 'common.py']
+    ignore = ['user.py']
     for root, _, files in os.walk(os.path.join(experiments_path, 'repository')):
         if root.split('/')[-1] == '__pycache__':
             continue
@@ -316,15 +316,7 @@ def make_user_dir(systems_dir, system, user_i, overwrite):
             user_file.write("# This file defines your user ID. DO NOT EDIT!\n")
             user_file.write(f"user_id = {user_i}\n")
         shutil.copy(user_file_path, 
-                    os.path.join(user_dir, "artiq", "user.py"))
-        shutil.copy(user_file_path, 
-                    os.path.join(user_dir, "artiq_solutions", "user.py"))
-        
-    # Copy common file
-    shutil.copy(os.path.join(experiments_path, 'repository', 'common.py'), 
-                os.path.join(user_dir, "artiq", "common.py"))
-    shutil.copy(os.path.join(experiments_path, 'repository', 'common.py'), 
-                os.path.join(user_dir, "artiq_solutions", "common.py"))
+                    os.path.join(user_dir, "user.py"))
 
 
 def make_system_dir(systems_dir, system, users, ctl_host, scope_ctl_host, overwirte):
