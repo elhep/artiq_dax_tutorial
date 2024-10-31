@@ -1,8 +1,8 @@
 {
     "target": "kasli",
-    "variant": "qce24",
+    "variant": "tutorial",
     "hw_rev": "v2.0",
-    "base": "master",
+    "base": "standalone",
     "peripherals": [
         {
             "type": "dio",
@@ -19,7 +19,7 @@
             "dds": "ad9910"
         },
         {
-            "type": "phaser",
+            "type": "fastino",
             "ports": [3]
         }
     ]

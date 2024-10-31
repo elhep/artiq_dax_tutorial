@@ -30,7 +30,7 @@ for system, ftdi_path in ftdi_mapping.items():
 experiments_path = os.path.join(
     os.path.dirname(os.path.realpath(__file__)), 'experiments')
 default_firmware_directory = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)), 'firmware', 'qce24')
+    os.path.dirname(os.path.realpath(__file__)), 'firmware', 'tutorial')
 
 # =================================================================================================
 # Argument parsing
