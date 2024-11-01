@@ -61,6 +61,47 @@ class Scope:
         )
         self.scope.run_queue(sleep_time=sleep_time)
 
+    def setup_for_fastino(self, reset=False, sleep_time=3.0):
+        self.scope.setup(
+            channel_configs=[
+                {
+                    "channel": 1,
+                    "vertical_scale": 2.5,
+                    "vertical_position": 3,
+                    "termination_fifty_ohms": False,
+                    "label": "DIO SMA 1",
+                    "ac_coupling": False
+                },
+                {
+                    "channel": 2,
+                    "enabled": False
+                },
+                {
+                    "channel": 3,
+                    "enabled": False
+                },
+                {
+                    "channel": 4,
+                    "vertical_scale": 0.5,
+                    "vertical_position": 0.0,
+                    "termination_fifty_ohms": False,
+                    "label": "Fastino 0",
+                    "ac_coupling": False
+                }
+            ],
+            horizontal_scale=4000*ns,
+            horizontal_position=16000*ns,
+            trigger_config={
+                "channel": 1,
+                "level": 2.5,
+                "slope": "RISE",
+                "mode": "NORMAL"
+            },
+            queue=True,
+            reset=reset
+        )
+        self.scope.run_queue(sleep_time=sleep_time)
+
     def store_waveform(self):
         im = Image.open(io.BytesIO(self.scope.get_screen_png()))
         im = np.array(im)
