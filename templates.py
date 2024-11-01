@@ -1,5 +1,4 @@
-device_db_template = """
-# QCE24 - System {system}
+device_db_template = """# QCE24 - System {system}
 core_addr = "{core_ip}"
 
 device_db = {{
@@ -7,7 +6,13 @@ device_db = {{
         "type": "local",
         "module": "artiq.coredevice.core",
         "class": "Core",
-        "arguments": {{"host": core_addr, "ref_period": 1e-09, "target": "rv32g"}},
+        "arguments": {{
+            "host": core_addr,
+            "ref_period": 1e-09,
+            "analyzer_proxy": "core_analyzer",
+            "target": "rv32g",
+            "satellite_cpu_targets": {{}}
+        }},
     }},
     "core_log": {{
         "type": "controller",
@@ -21,6 +26,13 @@ device_db = {{
         "port_proxy": {moninj_proxy_port},
         "port": {moninj_ctl_port},
         "command": "aqctl_moninj_proxy --port-proxy {{port_proxy}} --port-control {{port}} --bind {{bind}} " + core_addr
+    }},
+    "core_analyzer": {{
+        "type": "controller",
+        "host": "{ctl_host}",
+        "port_proxy": {coreanalyzer_proxy_port},
+        "port": {coreanalyzer_ctl_port},
+        "command": "aqctl_coreanalyzer_proxy --port-proxy {{port_proxy}} --port-control {{port}} --bind {{bind}} " + core_addr
     }},
     "core_cache": {{
         "type": "local",
@@ -201,8 +213,8 @@ device_db["urukul0_ch0"] = {{
     "module": "artiq.coredevice.ad9910",
     "class": "AD9910",
     "arguments": {{
-        "pll_en": 1,
         "pll_n": 32,
+        "pll_en": 1,
         "chip_select": 4,
         "cpld_device": "urukul0_cpld",
         "sw_device": "ttl_urukul0_sw0"
@@ -214,8 +226,8 @@ device_db["urukul0_ch1"] = {{
     "module": "artiq.coredevice.ad9910",
     "class": "AD9910",
     "arguments": {{
-        "pll_en": 1,
         "pll_n": 32,
+        "pll_en": 1,
         "chip_select": 5,
         "cpld_device": "urukul0_cpld",
         "sw_device": "ttl_urukul0_sw1"
@@ -227,8 +239,8 @@ device_db["urukul0_ch2"] = {{
     "module": "artiq.coredevice.ad9910",
     "class": "AD9910",
     "arguments": {{
-        "pll_en": 1,
         "pll_n": 32,
+        "pll_en": 1,
         "chip_select": 6,
         "cpld_device": "urukul0_cpld",
         "sw_device": "ttl_urukul0_sw2"
@@ -240,22 +252,40 @@ device_db["urukul0_ch3"] = {{
     "module": "artiq.coredevice.ad9910",
     "class": "AD9910",
     "arguments": {{
-        "pll_en": 1,
         "pll_n": 32,
+        "pll_en": 1,
         "chip_select": 7,
         "cpld_device": "urukul0_cpld",
         "sw_device": "ttl_urukul0_sw3"
     }}
 }}
 
-device_db["phaser0"] = {{
+device_db["fastino0"] = {{
     "type": "local",
-    "module": "artiq.coredevice.phaser",
-    "class": "Phaser",
-    "arguments": {{
-        "channel_base": 0x000012,
-        "miso_delay": 1,
-    }}
+    "module": "artiq.coredevice.fastino",
+    "class": "Fastino",
+    "arguments": {{"channel": 0x000012, "log2_width": 0}}
+}}
+
+device_db["led0"] = {{
+    "type": "local",
+    "module": "artiq.coredevice.ttl",
+    "class": "TTLOut",
+    "arguments": {{"channel": 0x000013}}
+}}
+
+device_db["led1"] = {{
+    "type": "local",
+    "module": "artiq.coredevice.ttl",
+    "class": "TTLOut",
+    "arguments": {{"channel": 0x000014}}
+}}
+
+device_db["led2"] = {{
+    "type": "local",
+    "module": "artiq.coredevice.ttl",
+    "class": "TTLOut",
+    "arguments": {{"channel": 0x000015}}
 }}"""
 
 scope_template = """
