@@ -7,7 +7,7 @@ from artiq.applets.simple import SimpleApplet
 
 
 class Image(pyqtgraph.GraphicsLayoutWidget):
-    def __init__(self, args):
+    def __init__(self, args, requests):
         super().__init__()
         self.args = args
         self.view = self.addViewBox()
@@ -15,7 +15,7 @@ class Image(pyqtgraph.GraphicsLayoutWidget):
         self.view.addItem(self.img_item)
         self.view.setAspectLocked(True)
 
-    def data_changed(self, data, mods):
+    def data_changed(self, data, metadata, persist, mods):
         try:
             img = data[self.args.img][1]
         except KeyError:
