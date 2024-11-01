@@ -17,7 +17,7 @@ class Image(pyqtgraph.GraphicsLayoutWidget):
 
     def data_changed(self, data, metadata, persist, mods):
         try:
-            img = data[self.args.img][1]
+            img = data[self.args.img]
         except KeyError:
             return
         self.img_item.setImage(img)
