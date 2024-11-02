@@ -88,6 +88,8 @@ dashboard_parser.add_argument('--system', '-s', type=str, required=True,
                               help="which system to get serial from (A or B or .. F)")
 dashboard_parser.add_argument('--master-ip', type=str, default="::1", required=False, 
                               help="Master IP address")
+dashboard_parser.add_argument('--only-cmd', action='store_true',
+                              help="Only display the command to run the dashboard")
 
 # =================================================================================================
 
@@ -130,7 +132,20 @@ generate_dashboard_config.add_argument('--master-ip', type=str, default="::1", r
 
 # =================================================================================================
 
-args = parser.parse_args()
+artiq_client_parser = subparsers.add_parser('client')
+artiq_client_parser.add_argument('--system', '-s', type=str, required=True,
+                              help="which system to get serial from (A or B or .. F)")
+
+# =================================================================================================
+
+# Consume arguments up to "--", pass the rest to the "cmd_args" variable
+args = sys.argv[1:]
+try:
+    dash_index = args.index("--")
+    args, cmd_args = args[:dash_index], args[dash_index+1:]
+except ValueError:
+    args, cmd_args = args, []
+args = parser.parse_args(args)
 
 # =================================================================================================
 # Commands functions
@@ -150,10 +165,21 @@ def flash():
         ftdi_path = ftdi_mapping[system]
         print("\n==> Flashing system ", system, f" with ftdi location {ftdi_path}\n")
         with tempfile.TemporaryDirectory() as tmpdirname:
+            # Generate RTIO map
+            device_db_path = os.path.join(tmpdirname, 'device_db.py')
+            dev_map_path = os.path.join(tmpdirname, 'dev_map.bin')
+            generate_ddb(device_db_path, system, '::1', "0.0.0.0", 0, 0)
+            subprocess.check_call([
+                'artiq_rtiomap',
+                '--device-db', device_db_path,
+                dev_map_path
+            ])
+            # Generate storage image
             storage_path = os.path.join(tmpdirname, 'storge.img')
-            subprocess.run([
+            subprocess.check_call([
                 'artiq_mkfs',
                 '-s', 'ip', ip_mapping[system],
+                '-f', 'device_map', dev_map_path,
                 storage_path
             ])
             cmd = [
@@ -165,7 +191,7 @@ def flash():
             if ftdi_path is not None:
                 cmd = [cmd[0], '-I', f'ftdi_location {ftdi_path}'] + cmd[1:]
             print(cmd)
-            subprocess.run(cmd)
+            subprocess.check_call(cmd)
 
 # =================================================================================================
 
@@ -275,6 +301,10 @@ def dashboard():
         "--port-control", str(master_control_ports[args.system]),
         "--port-broadcast", str(master_broadcast_ports[args.system]),
     ]
+    if args.only_cmd:
+        print(" ".join(dashboard_cmd))
+        return
+    
     with subprocess.Popen(dashboard_cmd):
         pass
 
@@ -424,6 +454,18 @@ def generate_dashboard_config():
         pyon.store_file(output_path, config)
 
 # =================================================================================================
+
+def run_artiq_client():
+    system = args.system
+    cmd = [
+        "artiq_client",
+        "--server", "::1",
+        "--port", str(master_control_ports[system]),
+        *cmd_args
+    ]
+    subprocess.run(cmd)
+
+# =================================================================================================
 # Entrypoint function
 # =================================================================================================
 
@@ -444,6 +486,8 @@ def main():
         deploy()
     elif args.command == "generate-dashboard-config":
         generate_dashboard_config()
+    elif args.command == "client":
+        run_artiq_client()
     else:
         print("Invalid command")
         exit(1)
