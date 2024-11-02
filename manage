@@ -293,7 +293,7 @@ def make_user_dir(systems_dir, system, user_i, overwrite):
         return
     
     # Copy experiments
-    prefix_ignore = ['__init__.py']
+    prefix_ignore = ['__init__.py', 'common.py']
     ignore = ['user.py']
     for root, _, files in os.walk(os.path.join(experiments_path, 'repository')):
         if root.split('/')[-1] == '__pycache__':

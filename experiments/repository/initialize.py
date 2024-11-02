@@ -32,6 +32,8 @@ class Initialize(EnvExperiment):
             urukul_ch.sw.off()
             urukul_ch.set_att(31.5)
 
+        self.fastino0.init()
+
     @kernel
     def run_rt(self):
         self.init()
