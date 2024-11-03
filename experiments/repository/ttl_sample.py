@@ -49,23 +49,15 @@ class TTLSampleExcersise(EnvExperiment):
         at_mu(t0)
 
         # ----------------------------------------------------------------------
-        # Since we want to sample each state (both on and off) we need to sample
-        # signal twice during one period. 
-        levels = [0 for n in range(2*N_SAMPLES)]
-        
-        # Delaying local time pointer so it is aligned with the middle point
-        # of the first upper or lower input state.
-        delay(PERIOD_US / 4)
-        for i in range(2*N_SAMPLES):
-            self.ttl5.sample_input() # instructs ARTIQ to sample input at the exact cursor position
-            delay(PERIOD_US / 2)
+        '''
+        TODO: Place your code here
 
+        Set time marker to the middle point of the first high inut state,
+        sample data on self.ttl5 input every 500 ns and place the result in a list.
+        At the end print the result
 
-        # Now retrieve sampled values and place them in a list
-        for i in range(2 * N_SAMPLES):
-            levels[i] = self.ttl5.sample_get()
-
-        print(levels)
+        NOTE: Remember to declare list first! 
+        '''
         # ----------------------------------------------------------------------
         self.scope.store_waveform()
 
