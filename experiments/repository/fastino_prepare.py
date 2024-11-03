@@ -71,7 +71,6 @@ class FastinoPrepareExcercise(EnvExperiment):
             # Catch RTIO Underflow to leave system in known state
             print("Rtio underflow, cleaning up")
             self.core.break_realtime()
-            raise
 
         finally:
             # Clean up even if RTIO Underflow happens
