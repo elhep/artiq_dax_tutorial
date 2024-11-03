@@ -75,7 +75,7 @@ class FastinoPrepareExcercise(EnvExperiment):
 
         finally:
             # Clean up even if RTIO Underflow happens
-            delay(40*us)
+            delay(self.Scope_horizontal_scale * 10)
             self.fastino.set_dac(dac=0, voltage=0.0*V)
             # Get scope image
             self.scope.store_waveform()

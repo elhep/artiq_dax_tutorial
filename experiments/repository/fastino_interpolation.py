@@ -154,9 +154,7 @@ class FastinoInterpolationExcercise(EnvExperiment):
     @kernel
     def clean_up(self):
         # Delay to allow for the interpolated sequence to settle
-        delay(self.Delay_multiplier * us * 10)
-        # Second trigger pulse to mark the end of the experiment
-        self.ttl.pulse(self.Scope_horizontal_scale/20)
+        delay(self.Scope_horizontal_scale * 10)
         # Set interpolation rate to 1
         self.fastino.stage_cic(1)
         delay(100*ns)
