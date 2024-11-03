@@ -21,7 +21,7 @@ class FastinoPrepareExcercise(EnvExperiment):
     def prepare(self):
         # Use these parameters
         self.Amplitude = 2 * V
-        self.sample_num = 200
+        self.sample_num = 12
 
         # Other functions to do: square, sawtooth, triangle
         # Sine, change 0.0 to sine function
