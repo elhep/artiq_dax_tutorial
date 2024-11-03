@@ -51,7 +51,7 @@ class Initialize(EnvExperiment):
             self.ttl1.pulse(1 * us)
             self.ttl3.pulse(1 * us)
             # TODO: Add ttl5 input
-            self.fastino0.set_dac(dac=0, voltage=3*V)
+            self.fastino0.set_dac(dac=0, voltage=0.5*V)
             delay(10 * us)
             self.fastino0.set_dac(dac=0, voltage=0*V)
             delay(1 * us)
@@ -65,7 +65,7 @@ class Initialize(EnvExperiment):
             
             # Profile scope.setup()
             setup_start = time.time()
-            self.scope.setup()
+            self.scope.setup_for_all()
             setup_end = time.time()
             setup_time = setup_end - setup_start
             
