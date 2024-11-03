@@ -4,7 +4,7 @@ from common import Scope
 import numpy as np
 
 
-class FastinoInterpolationExcerciseSolution(EnvExperiment):
+class FastinoInterpolationExcercise(EnvExperiment):
     def build(self):
         self.setattr_device("core")
         self.ttl = self.get_device("ttl1") # As a trigger
