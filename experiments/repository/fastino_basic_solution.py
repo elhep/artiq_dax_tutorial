@@ -32,10 +32,9 @@ class FastinoBasicExcerciseSolution(EnvExperiment):
         at_mu(now_mu()-self.core.seconds_to_mu(1.2 * us)) 
 
         # Calculate and output a sine waveform using numpy.sin
-        loop_length = self.sample_num
         try:
-            for i in range(loop_length):
-                self.fastino.set_dac(dac=0, voltage=self.Amplitude * numpy.sin(2*numpy.pi*i/loop_length*2))
+            for i in range(self.sample_num):
+                self.fastino.set_dac(dac=0, voltage=self.Amplitude * numpy.sin(2*numpy.pi*i/self.sample_num*2))
                 delay(392 * 2 * ns)
 
         except RTIOUnderflow:
