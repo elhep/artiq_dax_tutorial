@@ -2,78 +2,39 @@ from artiq.experiment import *
 from user import user_id
 from common import Scope
 
-class Timing2Excercise(EnvExperiment):
+
+class Timing2ExcerciseSolution(EnvExperiment):
     def build(self):
         self.setattr_device("core")
-        self.ttl = self.get_device("ttl0")
-        self.setattr_argument(
-            f"FirstPulseWidth", NumberValue(
-                default = 250,
-                ndecimals = 0,
-                unit = "ns",
-                type = "int",
-                step = 1,
-                min = 10,
-                max = 400,
-                scale=1
-            )
-        )
-        self.setattr_argument(
-            f"DelayToNextPulse", NumberValue(
-                default = 250,
-                ndecimals = 0,
-                unit = "ns",
-                type = "int",
-                step = 1,
-                min = 10,
-                max = 400,
-                scale=1
-            )
-        )
-        self.setattr_argument(
-            f"SecondPulseWidth", NumberValue(
-                default = 250,
-                ndecimals = 0,
-                unit = "ns",
-                type = "int",
-                step = 1,
-                min = 10,
-                max = 400,
-                scale=1
-            )
-        )
+        self.setattr_device("ttl1")
+        self.setattr_device("ttl3")
         self.scope = Scope(self, user_id)
-
-
 
     @kernel
     def run(self):
-        # Prepare oscilloscope
-        self.scope.setup()
+        # Prepare oscilloscope for experiment
+        self.scope.setup_for_dio(horizontal_scale=1*us)
+
         # Reset our system after previous experiment
         self.core.reset()
 
-        # Set SYSTEM time pointer in future
+        # Set software (now) counter in the future
         self.core.break_realtime()
+        
+        # SOLUTION
 
-        # t will be our LOCAL time pointer. For now it points the same point in timeline as SYSTEM pointer
+        # We need to store the current counter value for later use
         t = now_mu()
 
-        # Let's drive single pulse.
-        self.ttl.on()
-        at_mu(t + # start with local pointer
-              self.core.seconds_to_mu(self.FirstPulseWidth * ns)) # Add width of first pulse to time marker. Remember - we do not change 't' value!
-        self.ttl.off()
+        # This advances the counter by 3 us
+        self.ttl1.pulse(3*us)
 
-        # Let's drive another pulse
-        at_mu(t + # start with local pointer
-              self.core.seconds_to_mu(self.FirstPulseWidth * ns) + # add FirstPulseWidth - we are still calculating relative to t value
-              # which is start of first pulse
-              self.core.seconds_to_mu(self.DelayToNextPulse * ns))  # add Delay value
+        # Let's move counter to the value corresponding to the start of
+        # the second pulse.
+        at_mu(t + self.core.seconds_to_mu(2*us))
+        self.ttl3.pulse(4*us)
 
-        self.ttl.pulse(self.SecondPulseWidth * ns)
-        # Pulse method consists delay() function inside. SYSTEM pointer is now at falling edge of the second pulse.
+        # END SOLUTION
 
-
+        # This commmand downloads the waveform from the scope
         self.scope.store_waveform()
-

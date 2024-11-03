@@ -2,73 +2,34 @@ from artiq.experiment import *
 from user import user_id
 from common import Scope
 
-class Timing1Excercise(EnvExperiment):
+
+class Timing1ExcerciseSolution(EnvExperiment):
     def build(self):
         self.setattr_device("core")
-        self.ttl = self.get_device("ttl0")
-        self.setattr_argument(
-            f"FirstPulseWidth", NumberValue(
-                default = 250,
-                ndecimals = 0,
-                unit = "ns",
-                type = "int",
-                step = 1,
-                min = 10,
-                max = 400,
-                scale=1
-            )
-        )
-        self.setattr_argument(
-            f"DelayToNextPulse", NumberValue(
-                default = 250,
-                ndecimals = 0,
-                unit = "ns",
-                type = "int",
-                step = 1,
-                min = 10,
-                max = 400,
-                scale=1
-            )
-        )
-        self.setattr_argument(
-            f"SecondPulseWidth", NumberValue(
-                default = 250,
-                ndecimals = 0,
-                unit = "ns",
-                type = "int",
-                step = 1,
-                min = 10,
-                max = 400,
-                scale=1
-            )
-        )
+        self.setattr_device("ttl1")
+        self.setattr_device("ttl3")
         self.scope = Scope(self, user_id)
-
-
 
     @kernel
     def run(self):
-        # Prepare oscilloscope
-        self.scope.setup()
+        # Prepare oscilloscope for experiment
+        self.scope.setup_for_dio(horizontal_scale=1*us)
+
         # Reset our system after previous experiment
         self.core.reset()
 
-        # Set SYSTEM time pointer in future
+        # Set software (now) counter in the future
         self.core.break_realtime()
+        
+        # SOLUTION
 
-        # t will be our LOCAL time pointer. For now it points the same point in timeline as SYSTEM pointer
-        t = now_mu()
+        self.ttl1.on()
+        delay(2*us)
+        self.ttl1.off()
+        delay(1*us)
+        self.ttl3.pulse(2*us)
 
-        # Let's drive single pulse. With delay() we change system pointer relative: 
-        # software does not care about the exact point in timeline but we know that next event will take place exactly "FirstPulseWidth" microseconds after ttl.set_o(True) command
-        self.ttl.on()
-        delay(self.FirstPulseWidth * ns)
-        self.ttl.off()
-        # Wait a DelayToNextPulse nanosecond before start of the second pulse
-        delay(self.DelayToNextPulse * ns)
-        self.ttl.pulse(self.SecondPulseWidth * ns)
-        # Pulse method consists delay() function inside. SYSTEM pointer is now at falling edge of the second pulse.
+        # END SOLUTION
 
-
+        # This commmand downloads the waveform from the scope
         self.scope.store_waveform()
-
