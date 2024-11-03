@@ -29,6 +29,8 @@ class Test(EnvExperiment):
             urukul_ch.set_att(31.5)
 
         self.fastino0.init()
+        delay(8*ns)
+        self.fastino0.set_continuous(1)
 
     @kernel
     def run(self):
