@@ -10,7 +10,7 @@ class FastinoInterpolationExcerciseSolution(EnvExperiment):
         self.ttl = self.get_device("ttl1") # As a trigger
         self.fastino = self.get_device("fastino0")
 
-        # Lots of arguments
+        # Lots of arguments, scroll down
         self.setattr_argument(
             f"Function", EnumerationValue(
                 ["Sine", "Square", "Sawtooth", "Triangle", "Custom"],
@@ -87,7 +87,6 @@ class FastinoInterpolationExcerciseSolution(EnvExperiment):
         self.scope = Scope(self, user_id)
 
     def prepare(self):
-        # Other functions to do: square, sawtooth, triangle
         # Sine
         sine = [np.sin(2*np.pi*i/self.Sample_number*2) for i in range(self.Sample_number)]
         # Square
@@ -134,9 +133,11 @@ class FastinoInterpolationExcerciseSolution(EnvExperiment):
             # Iterate over samples
             for sample in self.samples:
                 self.fastino.set_dac(dac=0, voltage=sample)
+                # Try to change the multiplier; leave 392*ns unchanged
+                # (or don't and see what happens, it may be subtle :) )
                 delay(392 * self.Delay_multiplier * ns)
 
-# --------------------------------------------
+# ---------------------------------------------------------------------
 
         except RTIOUnderflow:
             # Catch RTIO Underflow to leave system in known state
@@ -147,14 +148,14 @@ class FastinoInterpolationExcerciseSolution(EnvExperiment):
         finally:
             # Clean up even if RTIO Underflow happens
             self.clean_up()
-            
+            # Get scope image
             self.scope.store_waveform()
 
     @kernel
     def clean_up(self):
-        # Delay to allow for the interpolated sequence to finish
-        delay(self.Interpolation_rate * us)
-        # Mark the end of the experiment with ttl
+        # Delay to allow for the interpolated sequence to settle
+        delay(self.Delay_multiplier * us * 10)
+        # Second trigger pulse to mark the end of the experiment
         self.ttl.pulse(self.Scope_horizontal_scale/20)
         # Set interpolation rate to 1
         self.fastino.stage_cic(1)

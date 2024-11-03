@@ -8,11 +8,6 @@ class FastinoBasicExcerciseSolution(EnvExperiment):
         self.setattr_device("core")
         self.ttl = self.get_device("ttl1") # As a trigger
         self.fastino = self.get_device("fastino0")
-
-        self.Amplitude = 2 * V
-
-        self.sample_num = 8
-
         self.scope = Scope(self, user_id)
 
     @kernel
@@ -32,19 +27,30 @@ class FastinoBasicExcerciseSolution(EnvExperiment):
         at_mu(now_mu()-self.core.seconds_to_mu(1.2 * us)) 
 
         # Calculate and output a sine waveform using numpy.sin
+
+        # Use these parameters
+        Amplitude = 2 * V
+        sample_num = 12
+
         try:
-            for i in range(self.sample_num):
-                self.fastino.set_dac(dac=0, voltage=self.Amplitude * numpy.sin(2*numpy.pi*i/self.sample_num*2))
-                delay(392 * 1 * ns)
+            for i in range(sample_num):
+                self.fastino.set_dac(dac=0, voltage= Amplitude * numpy.sin(2*numpy.pi*i / sample_num * 2))
+                # Try to change the multiplier; leave 392*ns unchanged
+                # (or don't and see what happens, it may be subtle :) )
+                delay(392*ns * 1)
+
+# ---------------------------------------------------------------------
 
         except RTIOUnderflow:
             # Catch RTIO Underflow to leave system in known state
             print("Rtio underflow, cleaning up")
             self.core.break_realtime()
+            raise
 
         finally:
-            # Clean up after RTIO Underflow
+            # Clean up even if RTIO Underflow happens
+            delay(40*us)
             self.fastino.set_dac(dac=0, voltage=0.0*V)
-
+            # Get scope image
             self.scope.store_waveform()
 

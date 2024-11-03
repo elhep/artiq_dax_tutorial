@@ -1,7 +1,7 @@
 from artiq.experiment import *
 from user import user_id
 from common import Scope
-import numpy as np
+import numpy
 
 class FastinoPrepareExcerciseSolution(EnvExperiment):
     def build(self):
@@ -9,15 +9,23 @@ class FastinoPrepareExcerciseSolution(EnvExperiment):
         self.ttl = self.get_device("ttl1") # As a trigger
         self.fastino = self.get_device("fastino0")
 
-        self.Amplitude = 2 * V
-        self.sample_num = 200
+        self.setattr_argument(
+            f"Scope_horizontal_scale", EnumerationValue(
+                ["1 us", "2 us", "4 us", "10 us", "20 us", "40 us", "100 us", "200 us", "400 us"],
+                default="10 us"
+            )
+        )
 
         self.scope = Scope(self, user_id)
 
     def prepare(self):
+        # Use these parameters
+        self.Amplitude = 2 * V
+        self.sample_num = 200
+
         # Other functions to do: square, sawtooth, triangle
         # Sine
-        self.samples = [np.sin(2*np.pi*i/self.sample_num*2) for i in range(self.sample_num)]
+        self.samples = [numpy.sin(2*numpy.pi*i/self.sample_num*2) for i in range(self.sample_num)]
         # Square
         # self.samples = [(i%2) for i in range(self.sample_num)]
         # Sawtooth
@@ -30,13 +38,14 @@ class FastinoPrepareExcerciseSolution(EnvExperiment):
 
         # Normalize samples
         self.samples = [self.Amplitude * self.samples[i]/max(self.samples) for i in range(len(self.samples))]
-        # Add 0 V sample to the end of the sequence to ensure proper start of the next experiment
-        self.samples = self.samples + [0.0]
+
+        # Argument hackery
+        self.Scope_horizontal_scale = int(self.Scope_horizontal_scale[:-3])*us
 
     @kernel
     def run(self):
         # Prepare oscilloscope
-        self.scope.setup_for_fastino()
+        self.scope.setup_for_fastino(horizontal_scale=self.Scope_horizontal_scale)
         # Reset our system after previous experiment
         self.core.reset()
 
@@ -51,16 +60,22 @@ class FastinoPrepareExcerciseSolution(EnvExperiment):
             # Iterate over samples
             for sample in self.samples:
                 self.fastino.set_dac(dac=0, voltage=sample)
-                delay(392 * 1 * ns)
+                # Try to change the multiplier; leave 392*ns unchanged
+                # (or don't and see what happens, it may be subtle :) )
+                delay(392*ns * 1)
+
+# ---------------------------------------------------------------------
 
         except RTIOUnderflow:
             # Catch RTIO Underflow to leave system in known state
             print("Rtio underflow, cleaning up")
             self.core.break_realtime()
+            raise
 
         finally:
             # Clean up even if RTIO Underflow happens
+            delay(40*us)
             self.fastino.set_dac(dac=0, voltage=0.0*V)
-
+            # Get scope image
             self.scope.store_waveform()
 
