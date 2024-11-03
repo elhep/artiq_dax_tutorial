@@ -33,27 +33,28 @@ class Initialize(EnvExperiment):
             urukul_ch.set_att(31.5)
 
         self.fastino0.init()
+        self.fastino0.set_dac(dac=0, voltage=0*V)
 
     @kernel
     def run_rt(self):
         self.init()
 
         # First setup Urukuls
-        self.urukul0_ch0.set(frequency=10 * MHz)
-        self.urukul0_ch0.set_att(10.0)
+        self.urukul0_ch0.set(frequency=1 * MHz)
+        self.urukul0_ch0.set_att(5.0)
         self.urukul0_ch0.sw.on()
 
         delay(1 * ms)
 
         # Starting TTL sequence will trigger the scope
         for _ in range(100):
-            self.ttl1.pulse(100 * ns)
-            self.ttl3.pulse(100 * ns)
+            self.ttl1.pulse(1 * us)
+            self.ttl3.pulse(1 * us)
             # TODO: Add ttl5 input
             self.fastino0.set_dac(dac=0, voltage=3*V)
-            delay(1*us)
+            delay(10 * us)
             self.fastino0.set_dac(dac=0, voltage=0*V)
-            delay(100 * ns)
+            delay(1 * us)
 
     def run(self):        
         total_time = 0
