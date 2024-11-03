@@ -34,7 +34,7 @@ class FastinoBasicExcercise(EnvExperiment):
 
         try:
             for i in range(sample_num):
-                self.fastino.set_dac(dac=0, voltage= <you function here>)
+                self.fastino.set_dac(dac=0, voltage= 0.0 ) # <-- your function here, instead of 0.0
                 # Try to change the multiplier; leave 392*ns unchanged
                 # (or don't and see what happens, it may be subtle :) )
                 delay(392*ns * 1)

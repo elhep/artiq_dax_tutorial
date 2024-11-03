@@ -24,8 +24,8 @@ class FastinoPrepareExcercise(EnvExperiment):
         self.sample_num = 200
 
         # Other functions to do: square, sawtooth, triangle
-        # Sine
-        self.samples = 
+        # Sine, change 0.0 to sine function
+        self.samples = [0.0 for i in range(self.sample_num)]
         # Square
         # self.samples = 
         # Sawtooth
@@ -38,7 +38,7 @@ class FastinoPrepareExcercise(EnvExperiment):
         # self.samples = []
 
         # Normalize samples to amplitude (see solutions if you're stuck)
-        self.samples = 
+        self.samples = []
 
         # Argument hackery, don't touch
         self.Scope_horizontal_scale = int(self.Scope_horizontal_scale[:-3])*us
