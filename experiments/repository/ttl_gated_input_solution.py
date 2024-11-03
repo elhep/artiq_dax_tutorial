@@ -51,6 +51,6 @@ class TTLGatedInputExcersise(EnvExperiment):
 
 
     def run(self):
-        self.scope.setup()
+        self.scope.setup_for_dio()
         self.run_rt()
         self.scope.store_waveform()

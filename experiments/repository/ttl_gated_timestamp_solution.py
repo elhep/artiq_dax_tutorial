@@ -59,7 +59,7 @@ class TTLGatedTimestampExcersise(EnvExperiment):
 
 
     def run(self):
-        self.scope.setup()
+        self.scope.setup_for_dio()
         
         print("Running...")
         self.run_rt()
