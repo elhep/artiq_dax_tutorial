@@ -35,7 +35,7 @@ class FastinoBasicExcerciseSolution(EnvExperiment):
         try:
             for i in range(self.sample_num):
                 self.fastino.set_dac(dac=0, voltage=self.Amplitude * numpy.sin(2*numpy.pi*i/self.sample_num*2))
-                delay(392 * 2 * ns)
+                delay(392 * 1 * ns)
 
         except RTIOUnderflow:
             # Catch RTIO Underflow to leave system in known state
