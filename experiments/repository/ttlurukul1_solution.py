@@ -15,7 +15,7 @@ class TTLUrukul1Solution(EnvExperiment):
     @kernel
     def run(self):
         # Prepare oscilloscope for experiment
-        self.scope.setup_for_urukul(horizontal_scale=50*ns)
+        self.scope.setup_for_urukul(horizontal_scale=100*ns)
 
         # Reset our system after previous experiment
         self.core.reset()
@@ -35,7 +35,7 @@ class TTLUrukul1Solution(EnvExperiment):
         # SOLUTION
 
         self.urukul_channels[0].set(
-            frequency=10*MHz,
+            frequency=20*MHz,
             phase=0.0,
             amplitude=1.0
         )

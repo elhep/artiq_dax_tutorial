@@ -133,7 +133,7 @@ class Scope:
             horizontal_scale=horizontal_scale,
             horizontal_position=4*horizontal_scale,
             trigger_config={
-                "channel": 1,
+                "channel": 2,
                 "level": 2.5,
                 "slope": "RISE",
                 "mode": "NORMAL"

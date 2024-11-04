@@ -34,20 +34,14 @@ class TTLUrukul2Solution(EnvExperiment):
 
         # SOLUTION
 
-        with parallel:
-            with sequential:
-                self.ttl3.pulse(200*ns)
-                delay(200*ns)
-                self.ttl3.pulse(200*ns)
-            with sequential:
-                self.urukul_channels[0].sw.on()
-                self.urukul_channels[0].set(frequency=10*MHz)
-                delay(200*ns)
-                self.urukul_channels[0].set(frequency=20*MHz)
-                delay(200*ns)
-                self.urukul_channels[0].set(frequency=10*MHz)
-                delay(200*ns)
-                self.urukul_channels[0].sw.off()
+        self.urukul_channels[0].sw.on()
+        self.urukul_channels[0].set(frequency=10*MHz)
+
+        self.ttl3.pulse(100*ns)
+        delay(400*ns)
+        self.ttl3.pulse(100*ns)
+        self.urukul_channels[0].set(frequency=25*MHz)
+        self.ttl3.pulse(100*ns)
 
         # END SOLUTION
 
