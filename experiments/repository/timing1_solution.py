@@ -3,7 +3,7 @@ from user import user_id
 from common import Scope
 
 
-class Timing1ExcerciseSolution(EnvExperiment):
+class Timing1Solution(EnvExperiment):
     def build(self):
         self.setattr_device("core")
         self.setattr_device("ttl1")
