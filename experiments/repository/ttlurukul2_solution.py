@@ -37,7 +37,23 @@ class TTLUrukul2Solution(EnvExperiment):
 
         # SOLUTION
 
-        # TODO Your code should be here
+        t = now_mu()
+        with parallel:
+            with sequential:
+                for _ in range(3):
+                    self.ttl3.pulse(1*us)
+                    delay(2*us)
+            with sequential:
+                # t + 0 us
+                self.urukul_channels[0].sw.pulse(1*us)
+                self.urukul_channels[0].set_att(6.0)
+                # t + 3 us
+                at_mu(t + self.core.seconds_to_mu(3*us))
+                self.urukul_channels[0].sw.pulse(1*us)
+                self.urukul_channels[0].set_att(0.0)
+                # t + 6 us
+                at_mu(t + self.core.seconds_to_mu(6*us))
+                self.urukul_channels[0].sw.pulse(1*us)
 
         # END SOLUTION
 
