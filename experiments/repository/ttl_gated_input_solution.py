@@ -3,7 +3,7 @@ from user import user_id
 from common import Scope
 
 
-class TTLGatedInputExcersise(EnvExperiment):
+class TTLGatedInputExcersiseSolution(EnvExperiment):
     def build(self):
         self.setattr_device("core")
         self.ttl1 = self.get_device("ttl1")

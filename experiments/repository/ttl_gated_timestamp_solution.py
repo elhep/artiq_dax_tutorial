@@ -7,7 +7,7 @@ N_PULSES = 8
 PERIOD_US = 1 * us
 
 
-class TTLGatedTimestampExcersise(EnvExperiment):
+class TTLGatedTimestampExcersiseSolution(EnvExperiment):
     def build(self):
         self.setattr_device("core")
         self.ttl1 = self.get_device("ttl1")

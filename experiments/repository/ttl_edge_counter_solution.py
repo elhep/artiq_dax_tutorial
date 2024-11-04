@@ -4,7 +4,7 @@ from common import Scope
 import numpy as np
 
 
-class TTLEdgeCounterExcersise(EnvExperiment):
+class TTLEdgeCounterExcersiseSolution(EnvExperiment):
     def build(self):
         self.setattr_device("core")
         self.ttl1 = self.get_device("ttl1")
