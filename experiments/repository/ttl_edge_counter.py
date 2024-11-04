@@ -40,19 +40,16 @@ class TTLEdgeCounterExcersise(EnvExperiment):
         self.init()
 
         # ----------------------------------------------------------------------
-        # Make use of 'parallel' and 'sequential' blocks. Open gate window of TTL
-        # Edge Counter for N_PULSES*PERIOD_US (this advances timer pointer) and
-        # in parallel with it generate square-like signal on ttl1 output.
-        with parallel:
-            self.ttl_edge_counter.gate_both(N_PULSES*PERIOD_US)
-            with sequential:
-                for _ in range(N_PULSES):
-                    self.ttl1.pulse(PERIOD_US / 2)
-                    delay(PERIOD_US / 2)
+        '''
+        TODO: Place your code here
 
-        # Fetch counted events. Note that gateware EdgeCounter allows to capture
-        # much bigger amounts of input events than simple TTL input without causing
-        # RTIOOverflow.
-        print(self.ttl_edge_counter.fetch_count())
+        Write missing part of the experiment that generates square-like signal
+        on self.ttl1 that lasts 8 us and has period of 1 us. This signal is fed
+        by wire to self.ttl5. Count both rising and falling edges of using
+        self.ttle_edge_counter device. 
+
+        Constructs such as 'with parallel', 'with sequential' might be
+        helpful, as well as ttl_edge_counter's methods: 'gate_both()' and 'fetch_count()'.
+        '''
         # ----------------------------------------------------------------------
         self.scope.store_waveform()
