@@ -2,41 +2,33 @@ from artiq.experiment import *
 from user import user_id
 from common import Scope
 
-class Timing3Excercise(EnvExperiment):
+
+class Timing3ExcerciseSolution(EnvExperiment):
     def build(self):
         self.setattr_device("core")
-        self.ttl = self.get_device("ttl0")
-        # self.setattr_device("scope")
-        self.setattr_argument(
-            f"Delay", NumberValue(
-                default = 100,
-                ndecimals = 0,
-                unit = "ns",
-                type = "int",
-                step = 1,
-                min = 100,
-                max = 1000,
-                scale=1
-            )
-        )
+        self.setattr_device("ttl1")
+        self.setattr_device("ttl3")
         self.scope = Scope(self, user_id)
 
     @kernel
     def run(self):
-        # Prepare oscilloscope
-        self.scope.setup()
+        # Prepare oscilloscope for experiment
+        self.scope.setup_for_dio(horizontal_scale=1*us)
+
         # Reset our system after previous experiment
         self.core.reset()
 
-        # Set SYSTEM time pointer in future
+        # Set software (now) counter in the future
         self.core.break_realtime()
+        
+        # SOLUTION
 
-        for i in range(10000):
-            # Simple code: for self.Delay value < 390 ns system timer counter will catch our program
-            self.ttl.on()
-            delay(self.Delay * ns)
-            self.ttl.off()
-            delay(self.Delay * ns)
+        self.ttl1.pulse(1*us)
+        print(now_mu())
+        delay(1*us)
+        self.ttl3.pulse(1*us)
 
+        # END SOLUTION
+
+        # This commmand downloads the waveform from the scope
         self.scope.store_waveform()
-
