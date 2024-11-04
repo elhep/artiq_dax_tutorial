@@ -2,7 +2,7 @@ from artiq.experiment import *
 from user import user_id
 from common import Scope
 
-class TTLUrukul2Solution(EnvExperiment):
+class TTLUrukul2(EnvExperiment):
     def build(self):
         self.setattr_device("core")
         self.setattr_device("ttl3")
