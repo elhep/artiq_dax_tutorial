@@ -2,6 +2,7 @@ from artiq.experiment import *
 from user import user_id
 from common import Scope
 
+
 class TTLUrukul2Solution(EnvExperiment):
     def build(self):
         self.setattr_device("core")
@@ -15,7 +16,7 @@ class TTLUrukul2Solution(EnvExperiment):
     @kernel
     def run(self):
         # Prepare oscilloscope for experiment
-        self.scope.setup_for_urukul(horizontal_scale=100*ns)
+        self.scope.setup_for_urukul(horizontal_scale=1*us)
 
         # Reset our system after previous experiment
         self.core.reset()
@@ -24,24 +25,19 @@ class TTLUrukul2Solution(EnvExperiment):
         self.core.break_realtime()
 
         # Intialize Urukul and Urukul channels
+        # Note that, although output is disabled, the frequency is set to 25 MHz
+        # and DDS is running.
         self.urukul.init()
-        for ch in self.urukul_channels:
-            ch.init()
-            ch.sw.off()
-            ch.set_att(0.0)
-            ch.set(frequency=25*MHz)
-        delay(10 * ms)
+        self.urukul_channels[0].init()
+        self.urukul_channels[0].sw.off()
+        self.urukul_channels[0].set_att(0.0)
+        self.urukul_channels[0].set(frequency=25*MHz, phase=0.0, amplitude=1.0)
+        # Wait for channel to be fully operational
+        delay(100 * us)
 
         # SOLUTION
 
-        self.urukul_channels[0].sw.on()
-        self.urukul_channels[0].set(frequency=10*MHz)
-
-        self.ttl3.pulse(100*ns)
-        delay(400*ns)
-        self.ttl3.pulse(100*ns)
-        self.urukul_channels[0].set(frequency=25*MHz)
-        self.ttl3.pulse(100*ns)
+        # TODO Your code should be here
 
         # END SOLUTION
 
