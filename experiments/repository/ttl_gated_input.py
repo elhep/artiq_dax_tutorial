@@ -51,24 +51,16 @@ class TTLGatedInputExcersise(EnvExperiment):
         # Set system time pointer back to t0
         at_mu(t0)
         # ----------------------------------------------------------------------
-        # Use self.ttl3 as an indicator of when the gate for input events is open
-        self.ttl3.on()
+        '''
+        TODO: Place your code here
 
-        # Open gate window for the time of incoming signals.
-        # Be aware that this method advances local time pointer by the duration
-        # of the open gate. It does, however, return the time pointer at the end
-        # of the gate window. It allows us to know when to stop counting input events.
-        gate_end_mu = self.ttl5.gate_both(PERIOD_US * N_PULSES)
-        self.ttl3.off()
+        Write experiment that counts events (both rising and falling edge) of signal
+        fed from self.ttl1 to self.ttl5.
+        Use self.ttl3 as an indicator of when the gate for input events is open.
+        Make use of <TTL_INPUT>.count() and <TTL_INPUT>.gate_both().
 
-        # Make that the wall clock catches up with the place our local time pointer
-        # is placed.
-        self.core.wait_until_mu(now_mu())
-
-        # Count events gathered on the input self.ttl5 channel up until the timestamp
-        # indicated by the "gate_both" method.
-        received = self.ttl5.count(gate_end_mu)
-        
-        print(received)
+        Remember to synchronise wall clock with local time pointer by using
+        'self.core.wait_until_mu()'.
+        '''
         # ----------------------------------------------------------------------
         self.scope.store_waveform()
