@@ -2,6 +2,7 @@ from artiq.experiment import *
 from user import user_id
 from common import Scope
 
+
 class TTLUrukul1Solution(EnvExperiment):
     def build(self):
         self.setattr_device("core")
@@ -24,13 +25,15 @@ class TTLUrukul1Solution(EnvExperiment):
         self.core.break_realtime()
 
         # Intialize Urukul and Urukul channels
+        # Note that, although output is disabled, the frequency is set to 25 MHz
+        # and DDS is running.
         self.urukul.init()
-        for ch in self.urukul_channels:
-            ch.init()
-            ch.sw.off()
-            ch.set_att(0.0)
-            ch.set(frequency=25*MHz)
-        delay(10 * ms)
+        self.urukul_channels[0].init()
+        self.urukul_channels[0].sw.off()
+        self.urukul_channels[0].set_att(0.0)
+        self.urukul_channels[0].set(frequency=25*MHz, phase=0.0, amplitude=1.0)
+        # Wait for channel to be fully operational
+        delay(100 * us)
 
         # SOLUTION
 
