@@ -57,21 +57,15 @@ class TTLGatedTimestampExcersise(EnvExperiment):
         # Set system time pointer back to t0
         at_mu(self.t0)
         # ----------------------------------------------------------------------
+        '''
+        TODO: Place your code here
+
+        Write experiment that registers input events (both rising and falling edge)
+        of signal fed from self.ttl1 to self.ttl5.
+        Make use of <TTL_INPUT>.gate_both() and <TTL_INPUT>.timestamp_mu() and place
+        received events in self.timestamps list
         
-        # Open gate window for the time of incoming signals.
-        # Be aware that this method advances local time pointer by the duration
-        # of the open gate. It does, however, return the time pointer at the end
-        # of the gate window. It allows us to know when to stop counting input events.
-        gate_end_mu = self.ttl5.gate_both(N_PULSES*PERIOD_US)
-        
-        i = 0
-        
-        # <TTL_INPUT>.timestamp_mu(time_in_mu) returns the timestamp of the next
-        # input event, or -1 if the hardware timestamp counter reaches the given
-        # value (here: gate_end_mu) before an event is received.
-        while i < len(self.timestamps):
-            self.timestamps[i] = self.ttl5.timestamp_mu(gate_end_mu)
-            i = i + 1
+        '''
         # ----------------------------------------------------------------------
         self.scope.store_waveform()
 
